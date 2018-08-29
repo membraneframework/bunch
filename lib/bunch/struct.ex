@@ -20,7 +20,7 @@ defmodule Bunch.Struct do
           struct
   def update_in(struct, keys, f), do: struct |> Bunch.Access.update_in(keys |> map_keys(), f)
 
-  @spec update_in(struct, Access.key() | [Access.key()], (a -> a)) :: {a, struct}
+  @spec get_and_update_in(struct, Access.key() | [Access.key()], (a -> a)) :: {a, struct}
         when a: Access.value()
   def get_and_update_in(struct, keys, f),
     do: struct |> Bunch.Access.get_and_update_in(keys |> map_keys(), f)
@@ -28,7 +28,7 @@ defmodule Bunch.Struct do
   @spec pop_in(struct, Access.key() | [Access.key()]) :: {Access.value(), struct}
   def pop_in(struct, keys), do: struct |> Bunch.Access.pop_in(keys |> map_keys())
 
-  @spec pop_in(struct, Access.key() | [Access.key()]) :: struct
+  @spec delete_in(struct, Access.key() | [Access.key()]) :: struct
   def delete_in(struct, keys), do: struct |> Bunch.Access.delete_in(keys |> map_keys())
 
   @spec map_keys(Access.key() | [Access.key()]) :: [Access.access_fun(struct | map, term)]

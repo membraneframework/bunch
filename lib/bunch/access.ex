@@ -26,7 +26,7 @@ defmodule Bunch.Access do
   def update_in(container, [], f), do: f.(container)
   def update_in(container, keys, f), do: container |> Kernel.update_in(keys |> map_keys, f)
 
-  @spec update_in(Access.t(), Access.key() | [Access.key()], (a -> a)) :: {a, Access.t()}
+  @spec get_and_update_in(Access.t(), Access.key() | [Access.key()], (a -> a)) :: {a, Access.t()}
         when a: Access.value()
   def get_and_update_in(container, [], f), do: f.(container)
 
@@ -37,7 +37,7 @@ defmodule Bunch.Access do
   def pop_in(container, []), do: {nil, container}
   def pop_in(container, keys), do: container |> Kernel.pop_in(keys |> map_keys)
 
-  @spec pop_in(Access.t(), Access.key() | [Access.key()]) :: Access.t()
+  @spec delete_in(Access.t(), Access.key() | [Access.key()]) :: Access.t()
   def delete_in(container, keys), do: pop_in(container, keys) ~> ({_out, container} -> container)
 
   @spec map_keys(Access.key() | [Access.key()]) :: [Access.key()]

@@ -1,6 +1,6 @@
 defmodule Bunch.Module do
   @moduledoc """
-  A bunch of functions for easier manipulation on modules
+  A bunch of functions for easier manipulation on modules.
   """
 
   @doc """

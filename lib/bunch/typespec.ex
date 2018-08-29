@@ -10,8 +10,8 @@ defmodule Bunch.Typespec do
   end
 
   @doc """
-  Allows to define a type in form of `t :: x | y | z` and a module parameter
-  in form of `@t [x, y, z]` at once.
+  Allows to define a type in form of `t :: x | y | z | ...` and a module parameter
+  in form of `@t [x, y, z, ...]` at once.
 
   ## Example
   ```
