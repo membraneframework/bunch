@@ -1,4 +1,8 @@
 defmodule Bunch.Macro do
+  @moduledoc """
+  A bunch of helpers for implementing macros.
+  """
+
   @doc """
   Imitates `import` functionality by finding and replacing bare function
   calls (like `foo()`) in AST with fully-qualified call (like `Some.Module.foo()`)

@@ -1,6 +1,7 @@
 defmodule Bunch.Retry do
   @moduledoc """
-  Helper for handling scenarios when some actions should be repeated until it succeeds.
+  A bunch of helpers for handling scenarios when some actions should be repeated
+  until it succeeds.
   """
 
   @type retry_option ::
@@ -9,7 +10,7 @@ defmodule Bunch.Retry do
           | {:delay, milliseconds :: pos_integer}
 
   @doc """
-  Calls `fun` until function `arbiter` decides to stop
+  Calls `fun` function until `arbiter` function decides to stop.
   """
   @spec retry(
           fun :: (() -> res),

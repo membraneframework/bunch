@@ -1,6 +1,6 @@
 defmodule Bunch.Typespec do
   @moduledoc """
-  Contains helper macro generating typespec from list
+  A bunch of typespec-related helpers.
   """
   defmacro __using__(_args) do
     quote do
@@ -9,6 +9,22 @@ defmodule Bunch.Typespec do
     end
   end
 
+  @doc """
+  Allows to define a type in form of `t :: x | y | z` and a module parameter
+  in form of `@t [x, y, z]` at once.
+
+  ## Example
+  ```
+  iex> defmodule Abc do
+  ...> use #{__MODULE__}
+  ...> @list_type t :: [:a, :b, :c]
+  ...> @spec get_at(0..2) :: t
+  ...> def get_at(x), do: @t |> Enum.at(x)
+  ...> end
+  iex> Abc.get_at(1)
+  :b
+  ```
+  """
   defmacro @{:list_type, _, [{:::, _, [{name, _, _} = name_var, list]}]} do
     type = list |> Enum.reduce(fn a, b -> {:|, [], [a, b]} end)
 
