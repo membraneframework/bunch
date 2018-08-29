@@ -1,6 +1,6 @@
 defmodule Bunch.Enum do
   @moduledoc """
-  Module containing helper functions for manipulating enums.
+  A bunch of helper functions for manipulating enums.
   """
 
   use Bunch

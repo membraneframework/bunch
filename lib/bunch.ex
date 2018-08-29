@@ -1,8 +1,11 @@
 defmodule Bunch do
   @moduledoc """
-  Module containing various helper functions that improve code readability
+  A bunch of general-purpose helper and convenience functions.
   """
 
+  @doc """
+  Brings some useful functions to the scope.
+  """
   defmacro __using__(_args) do
     quote do
       import unquote(__MODULE__),
@@ -10,7 +13,7 @@ defmodule Bunch do
     end
   end
 
-  @compile {:inline, listify: 1, wrap_nil: 2, int_part: 2}
+  @compile {:inline, listify: 1, error_if_nil: 2, int_part: 2}
 
   @doc """
   A labeled version of the `with` macro.
@@ -22,7 +25,7 @@ defmodule Bunch do
   Labels also make it possible to access results of already succeeded matches
   from else clauses. That is why labels have to be known at the compile time.
 
-  Sample usage:
+  ## Examples
   ```
   iex> use Bunch
   iex> list = [-1, 3, 2]
@@ -46,7 +49,7 @@ defmodule Bunch do
   @doc """
   Works like `withl/2`, but allows shorter syntax.
 
-  Sample usage:
+  ## Examples
   ```
   iex> use Bunch
   iex> x = 1
@@ -99,6 +102,19 @@ defmodule Bunch do
     end)
   end
 
+  @doc """
+  Embeds the argument in a one-element list if it is not a list itself. Otherwise
+  works as identity.
+
+  ## Examples
+  ```
+  iex> #{__MODULE__}.listify(:a)
+  [:a]
+  iex> #{__MODULE__}.listify([:a, :b, :c])
+  [:a, :b, :c]
+  ```
+  """
+  @spec listify(a | [a]) :: [a] when a: any
   def listify(list) when is_list(list) do
     list
   end
@@ -107,47 +123,146 @@ defmodule Bunch do
     [non_list]
   end
 
-  def wrap_nil(nil, reason), do: {:error, reason}
-  def wrap_nil(v, _), do: {:ok, v}
+  @doc """
+  Returns error tuple if given value is nil and ok tuple otherwise.
+  """
+  @spec error_if_nil(value, reason) :: {:ok, value} | {:error, reason}
+        when value: any(), reason: any()
+  def error_if_nil(nil, reason), do: {:error, reason}
+  def error_if_nil(v, _), do: {:ok, v}
 
-  def result_with_status({:ok, _state} = res), do: {:ok, res}
-  def result_with_status({{:ok, _res}, _state} = res), do: {:ok, res}
-  def result_with_status({{:error, reason}, _state} = res), do: {{:error, reason}, res}
-  def result_with_status({:error, reason} = res), do: {{:error, reason}, res}
+  @doc """
+  Returns given stateful try value along with its status.
+  """
+  @spec stateful_try_with_status(result) :: {status, result}
+        when error: {:error, any()},
+             status: :ok | error,
+             result: {:ok | {:ok, value :: any()} | error, state :: any()}
+  def stateful_try_with_status({:ok, _state} = res), do: {:ok, res}
+  def stateful_try_with_status({{:ok, _res}, _state} = res), do: {:ok, res}
+  def stateful_try_with_status({{:error, reason}, _state} = res), do: {{:error, reason}, res}
 
-  def int_part(x, d) when is_integer(x) and is_integer(d) do
-    r = x |> rem(d)
-    x - r
+  @doc """
+  Returns `value` decreased by `value (mod divisor)`
+
+  ## Examples
+  ```
+  iex> #{__MODULE__}.int_part(10, 4)
+  8
+  iex> #{__MODULE__}.int_part(7, 7)
+  7
+  ```
+  """
+  @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
+  def int_part(value, divisor) do
+    remainder = value |> rem(divisor)
+    value - remainder
   end
 
-  defmacro x ~> match_clauses when is_list(match_clauses) do
+  @doc """
+  Helper for writing pipeline-like syntax. Maps given value using match clauses
+  or lambda-like syntax.
+
+  ## Examples
+  ```
+  iex> use #{__MODULE__}
+  iex> {:ok, 10} ~> ({:ok, x} -> x)
+  10
+  iex> 5 ~> &1 + 2
+  7
+  ```
+
+  Useful especially when dealing with a pipeline of operations (made up e.g.
+  with pipe (`|>`) operator) some of which are hard to express in such form:
+  ```
+  iex> use #{__MODULE__}
+  iex> ["Joe", "truck", "jacket"]
+  ...> |> Enum.map(&String.downcase/1)
+  ...> |> Enum.filter(& &1 |> String.starts_with?("j"))
+  ...> ~> ["Words:" | &1]
+  ...> |> Enum.join("\\n")
+  "Words:
+  joe
+  jacket"
+  ```
+  """
+  # Case when the mapper is a list of match clauses
+  defmacro value ~> ([{:->, _, _} | _] = mapper) do
     quote do
-      case unquote(x) do
-        unquote(match_clauses)
+      case unquote(value) do
+        unquote(mapper)
       end
     end
   end
 
-  defmacro x ~> lambda do
+  # Case when the mapper is a piece of lambda-like code
+  defmacro x ~> mapper do
     quote do
-      unquote({:&, [], [lambda]}).(unquote(x))
+      unquote({:&, [], [mapper]}).(unquote(x))
     end
   end
 
-  defmacro x ~>> match_clauses do
+  @doc """
+  Works similar to `~>/2`, but accepts only `->` clauses and appends default
+  identity clause at the end.
+
+  ## Examples
+  ```
+  iex> use #{__MODULE__}
+  iex> {:ok, 10} ~>> ({:ok, x} -> {:ok, x+1})
+  {:ok, 11}
+  iex> :error ~>> ({:ok, x} -> {:ok, x+1})
+  :error
+  ```
+  """
+  defmacro value ~>> mapper_clauses do
     default =
       quote do
-        _ -> unquote(x)
+        _ -> unquote(value)
       end
 
     quote do
-      case unquote(x) do
-        unquote(match_clauses ++ default)
+      case unquote(value) do
+        unquote(mapper_clauses ++ default)
       end
     end
   end
 
-  defmacro provided(value, that: condition, else: default) do
+  @doc """
+  Macro providing support for python-style condition notation.
+
+  ## Examples
+  ```
+  iex> use #{__MODULE__}
+  iex> x = 10
+  iex> x |> provided(that: x > 0, else: 0)
+  10
+  iex> x = -4
+  iex> x |> provided(that: x > 0, else: 0)
+  0
+  ```
+
+  Apart from `that`, supported are also `do` and `not` keys:
+  ```
+  iex> use #{__MODULE__}
+  iex> x = -4
+  iex> x |> provided do x > 0 else 0 end
+  0
+  iex> x = -4
+  iex> x |> provided(not: x > 0, else: 0)
+  -4
+  ```
+  """
+  defmacro provided(value, that: condition, else: default),
+    do: do_provided(value, condition, default)
+
+  defmacro provided(value, do: condition, else: default),
+    do: do_provided(value, condition, default)
+
+  defmacro provided(value, not: condition, else: default),
+    do: do_provided(default, condition, value)
+
+  defp do_provided(value, condition, default) do
     quote do
       if unquote(condition) do
         unquote(value)
@@ -157,58 +272,14 @@ defmodule Bunch do
     end
   end
 
-  defmacro provided(value, that: condition) do
-    quote do
-      if unquote(condition) do
-        unquote(value)
-      else
-        []
-      end
-    end
-  end
+  @doc """
+  Returns stacktrace as a string.
 
-  defmacro provided(value, do: condition, else: default) do
-    quote do
-      if unquote(condition) do
-        unquote(value)
-      else
-        unquote(default)
-      end
-    end
-  end
-
-  defmacro provided(value, do: condition) do
-    quote do
-      if unquote(condition) do
-        unquote(value)
-      else
-        []
-      end
-    end
-  end
-
-  defmacro provided(value, not: condition, else: default) do
-    quote do
-      if !unquote(condition) do
-        unquote(value)
-      else
-        unquote(default)
-      end
-    end
-  end
-
-  defmacro provided(value, not: condition) do
-    quote do
-      if !unquote(condition) do
-        unquote(value)
-      else
-        []
-      end
-    end
-  end
-
+  The stacktrace is formatted to the readable format.
+  """
   defmacro stacktrace do
     quote do
+      use unquote(__MODULE__)
       # drop excludes `Process.info/2` call
       Process.info(self(), :current_stacktrace)
       ~> ({:current_stacktrace, trace} -> trace)

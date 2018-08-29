@@ -1,6 +1,6 @@
 defmodule Bunch.Struct do
   @moduledoc """
-  A set of functions for easier manipulation on structs that do not implement
+  A bunch of functions for easier manipulation on structs that do not implement
   `Access` behaviour.
 
   For more details see `Bunch.Access` module.

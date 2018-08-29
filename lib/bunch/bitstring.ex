@@ -1,6 +1,6 @@
 defmodule Bunch.Bitstring do
   @moduledoc """
-  Module containing helper functions for manipulating bitstrings.
+  A bunch of helpers for manipulating bitstrings.
   """
 
   @doc """

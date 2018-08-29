@@ -1,6 +1,6 @@
 defmodule Bunch.Access do
   @moduledoc """
-  A set of functions for easier manipulation on terms of types implementing `Access`
+  A bunch of functions for easier manipulation on terms of types implementing `Access`
   behaviour.
 
   Behaviour differs from Kernel implementations in some aspects:
