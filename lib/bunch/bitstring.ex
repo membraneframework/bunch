@@ -10,9 +10,9 @@ defmodule Bunch.Bitstring do
 
   ## Examples
   ```
-  iex> <<1, 2, 3, 4, 5, 6>> |> #{__MODULE__}.split(2)
+  iex> <<1, 2, 3, 4, 5, 6>> |> #{inspect(__MODULE__)}.split(2)
   [<<1, 2>>, <<3, 4>>, <<5, 6>>]
-  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{__MODULE__}.split(2)
+  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{inspect(__MODULE__)}.split(2)
   [<<1, 2>>, <<3, 4>>, <<5, 6>>]
   ```
   """
@@ -29,9 +29,9 @@ defmodule Bunch.Bitstring do
 
   ## Examples
   ```
-  iex> <<1, 2, 3, 4, 5, 6>> |> #{__MODULE__}.split_rem(2)
+  iex> <<1, 2, 3, 4, 5, 6>> |> #{inspect(__MODULE__)}.split_rem(2)
   {[<<1, 2>>, <<3, 4>>, <<5, 6>>], <<>>}
-  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{__MODULE__}.split_rem(2)
+  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{inspect(__MODULE__)}.split_rem(2)
   {[<<1, 2>>, <<3, 4>>, <<5, 6>>], <<7>>}
   ```
   """

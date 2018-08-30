@@ -9,9 +9,9 @@ defmodule Bunch.Enum do
   Generates a list consisting of `i` values `v`.
 
   ```
-  iex> #{__MODULE__}.repeated(:abc, 4)
+  iex> #{inspect(__MODULE__)}.repeated(:abc, 4)
   [:abc, :abc, :abc, :abc]
-  iex> #{__MODULE__}.repeated(:abc, 0)
+  iex> #{inspect(__MODULE__)}.repeated(:abc, 0)
   []
   ```
   """
@@ -33,9 +33,9 @@ defmodule Bunch.Enum do
 
   ```
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.repeat(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, 4)
+  iex> #{inspect(__MODULE__)}.repeat(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, 4)
   [0, 1, 2, 3]
-  iex> #{__MODULE__}.repeat(fn -> :abc end, 0)
+  iex> #{inspect(__MODULE__)}.repeat(fn -> :abc end, 0)
   []
   ```
   """
@@ -60,9 +60,9 @@ defmodule Bunch.Enum do
 
   ## Examples:
   ```
-  iex> #{__MODULE__}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end)
+  iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end)
   [[1, 2], [5, 5]]
-  iex> #{__MODULE__}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end, &Enum.sum/1)
+  iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end, &Enum.sum/1)
   [3, 10]
   ```
   """
@@ -107,9 +107,9 @@ defmodule Bunch.Enum do
   ...> x, acc when acc >= 0 -> {:ok,  x + acc}
   ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
   ...> end
-  iex> #{__MODULE__}.try_reduce([1,5,-2,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_reduce([1,5,-2,8], 0, fun)
   {:ok, 12}
-  iex> #{__MODULE__}.try_reduce([1,5,-7,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_reduce([1,5,-7,8], 0, fun)
   {{:error, :negative_prefix_sum}, -1}
   ```
   """
@@ -139,11 +139,11 @@ defmodule Bunch.Enum do
   ...> x, acc when acc >= 0 -> {{:ok, :cont}, x + acc}
   ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
   ...> end
-  iex> #{__MODULE__}.try_reduce_while([1,5,-2,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-2,8], 0, fun)
   {:ok, 12}
-  iex> #{__MODULE__}.try_reduce_while([1,5,0,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,0,8], 0, fun)
   {:ok, 6}
-  iex> #{__MODULE__}.try_reduce_while([1,5,-7,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-7,8], 0, fun)
   {{:error, :negative_prefix_sum}, -1}
   ```
   """
@@ -174,9 +174,9 @@ defmodule Bunch.Enum do
   ## Examples:
   ```
   iex> fun = fn 0 -> {:error, :zero}; x -> send(self(), 1/x); :ok end
-  iex> #{__MODULE__}.try_each([1,2,3], fun)
+  iex> #{inspect(__MODULE__)}.try_each([1,2,3], fun)
   :ok
-  iex> #{__MODULE__}.try_each([1,0,3], fun)
+  iex> #{inspect(__MODULE__)}.try_each([1,0,3], fun)
   {:error, :zero}
   ```
   """
@@ -203,9 +203,9 @@ defmodule Bunch.Enum do
   ## Examples:
   ```
   iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, 1/x} end
-  iex> #{__MODULE__}.try_map([1,5,-2,8], fun)
+  iex> #{inspect(__MODULE__)}.try_map([1,5,-2,8], fun)
   {:ok, [1.0, 0.2, -0.5, 0.125]}
-  iex> #{__MODULE__}.try_map([1,5,0,8], fun)
+  iex> #{inspect(__MODULE__)}.try_map([1,5,0,8], fun)
   {:error, :zero}
   ```
   """
@@ -232,9 +232,9 @@ defmodule Bunch.Enum do
   ## Examples:
   ```
   iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, [1/x, 2/x, 3/x]} end
-  iex> #{__MODULE__}.try_flat_map([1,5,-2,8], fun)
+  iex> #{inspect(__MODULE__)}.try_flat_map([1,5,-2,8], fun)
   {:ok, [1.0, 2.0, 3.0, 0.2, 0.4, 0.6, -0.5, -1.0, -1.5, 0.125, 0.25, 0.375]}
-  iex> #{__MODULE__}.try_flat_map([1,5,0,8], fun)
+  iex> #{inspect(__MODULE__)}.try_flat_map([1,5,0,8], fun)
   {:error, :zero}
   ```
   """
@@ -264,9 +264,9 @@ defmodule Bunch.Enum do
   ...> x, acc when acc >= 0 -> {{:ok, x+1}, x + acc}
   ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
   ...> end
-  iex> #{__MODULE__}.try_map_reduce([1,5,-2,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-2,8], 0, fun)
   {{:ok, [2,6,-1,9]}, 12}
-  iex> #{__MODULE__}.try_map_reduce([1,5,-7,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-7,8], 0, fun)
   {{:error, :negative_prefix_sum}, -1}
   ```
   """
@@ -297,9 +297,9 @@ defmodule Bunch.Enum do
   ...> x, acc when acc >= 0 -> {{:ok, [x+1, x+2, x+3]}, x + acc}
   ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
   ...> end
-  iex> #{__MODULE__}.try_flat_map_reduce([1,5,-2,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-2,8], 0, fun)
   {{:ok, [2,3,4,6,7,8,-1,0,1,9,10,11]}, 12}
-  iex> #{__MODULE__}.try_flat_map_reduce([1,5,-7,8], 0, fun)
+  iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-7,8], 0, fun)
   {{:error, :negative_prefix_sum}, -1}
   ```
   """
@@ -324,7 +324,7 @@ defmodule Bunch.Enum do
 
   ## Examples:
   ```
-  iex> #{__MODULE__}.zip_longest([[1, 2] ,[3 ,4, 5]])
+  iex> #{inspect(__MODULE__)}.zip_longest([[1, 2] ,[3 ,4, 5]])
   [[1, 3], [2, 4], [5]]
   ```
   It also returns list of lists, as opposed to tuples.
@@ -355,9 +355,9 @@ defmodule Bunch.Enum do
 
   ## Examples:
   ```
-  iex> #{__MODULE__}.unzip([{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}])
+  iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}])
   {[1, 4, 7, 10], [2, 5, 8, 11], [3, 6, 9, 12]}
-  iex> #{__MODULE__}.unzip([{1,2,3}, {4,5}, {6,7,8,9}, {10,11,12}])
+  iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5}, {6,7,8,9}, {10,11,12}])
   {[1, 4, 6, 10], [2, 5, 7, 11]}
   ```
   """

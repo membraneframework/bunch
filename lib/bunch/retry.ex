@@ -24,23 +24,23 @@ defmodule Bunch.Retry do
   ## Examples
   ```
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3)
+  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3)
   4
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 10)
+  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 10)
   4
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 2)
+  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 2)
   2
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.retry(
+  iex> #{inspect(__MODULE__)}.retry(
   ...> fn -> :timer.sleep(10); Agent.get_and_update(pid, &{&1, &1+1}) end,
   ...> & &1 > 3,
   ...> duration: 25
   ...> )
   2
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{__MODULE__}.retry(
+  iex> #{inspect(__MODULE__)}.retry(
   ...> fn -> :timer.sleep(7); Agent.get_and_update(pid, &{&1, &1+1}) end,
   ...> & &1 > 3,
   ...> duration: 25, delay: 3

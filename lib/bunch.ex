@@ -108,9 +108,9 @@ defmodule Bunch do
 
   ## Examples
   ```
-  iex> #{__MODULE__}.listify(:a)
+  iex> #{inspect(__MODULE__)}.listify(:a)
   [:a]
-  iex> #{__MODULE__}.listify([:a, :b, :c])
+  iex> #{inspect(__MODULE__)}.listify([:a, :b, :c])
   [:a, :b, :c]
   ```
   """
@@ -147,9 +147,9 @@ defmodule Bunch do
 
   ## Examples
   ```
-  iex> #{__MODULE__}.int_part(10, 4)
+  iex> #{inspect(__MODULE__)}.int_part(10, 4)
   8
-  iex> #{__MODULE__}.int_part(7, 7)
+  iex> #{inspect(__MODULE__)}.int_part(7, 7)
   7
   ```
   """
@@ -165,7 +165,7 @@ defmodule Bunch do
 
   ## Examples
   ```
-  iex> use #{__MODULE__}
+  iex> use #{inspect(__MODULE__)}
   iex> {:ok, 10} ~> ({:ok, x} -> x)
   10
   iex> 5 ~> &1 + 2
@@ -175,7 +175,7 @@ defmodule Bunch do
   Useful especially when dealing with a pipeline of operations (made up e.g.
   with pipe (`|>`) operator) some of which are hard to express in such form:
   ```
-  iex> use #{__MODULE__}
+  iex> use #{inspect(__MODULE__)}
   iex> ["Joe", "truck", "jacket"]
   ...> |> Enum.map(&String.downcase/1)
   ...> |> Enum.filter(& &1 |> String.starts_with?("j"))
@@ -208,7 +208,7 @@ defmodule Bunch do
 
   ## Examples
   ```
-  iex> use #{__MODULE__}
+  iex> use #{inspect(__MODULE__)}
   iex> {:ok, 10} ~>> ({:ok, x} -> {:ok, x+1})
   {:ok, 11}
   iex> :error ~>> ({:ok, x} -> {:ok, x+1})
@@ -233,7 +233,7 @@ defmodule Bunch do
 
   ## Examples
   ```
-  iex> use #{__MODULE__}
+  iex> use #{inspect(__MODULE__)}
   iex> x = 10
   iex> x |> provided(that: x > 0, else: 0)
   10
@@ -244,7 +244,7 @@ defmodule Bunch do
 
   Apart from `that`, supported are also `do` and `not` keys:
   ```
-  iex> use #{__MODULE__}
+  iex> use #{inspect(__MODULE__)}
   iex> x = -4
   iex> x |> provided do x > 0 else 0 end
   0

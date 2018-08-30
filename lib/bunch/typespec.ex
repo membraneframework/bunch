@@ -16,7 +16,7 @@ defmodule Bunch.Typespec do
   ## Example
   ```
   iex> defmodule Abc do
-  ...> use #{__MODULE__}
+  ...> use #{inspect(__MODULE__)}
   ...> @list_type t :: [:a, :b, :c]
   ...> @spec get_at(0..2) :: t
   ...> def get_at(x), do: @t |> Enum.at(x)
