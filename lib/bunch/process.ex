@@ -1,6 +1,6 @@
-defmodule Bunch.Timer do
+defmodule Bunch.Process do
   @moduledoc """
-  A bunch of timer-related helpers.
+  A bunch of functions extending functionality of the `Process` module.
   """
 
   @doc """
