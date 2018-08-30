@@ -353,10 +353,12 @@ defmodule Bunch.Enum do
   Size of returned tuple is equal to size of the shortest tuple in `tuples`.
 
   ## Examples:
+  ```
   iex> #{__MODULE__}.unzip([{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}])
   {[1, 4, 7, 10], [2, 5, 8, 11], [3, 6, 9, 12]}
   iex> #{__MODULE__}.unzip([{1,2,3}, {4,5}, {6,7,8,9}, {10,11,12}])
   {[1, 4, 6, 10], [2, 5, 7, 11]}
+  ```
   """
   @spec unzip(tuples :: [tuple()]) :: tuple()
   def unzip([]), do: {}
