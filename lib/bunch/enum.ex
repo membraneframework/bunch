@@ -53,6 +53,7 @@ defmodule Bunch.Enum do
 
   @doc """
   Splits enumerable into chunks, and passes each chunk through `collector`.
+
   New chunk is created each time `chunker` returns `false`. The `chunker` is passed
   current and previous element of enumerable.
 
@@ -93,9 +94,11 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.reduce/3` as long as given `fun` returns `{:ok, new_acc}`.
+  Works like `Enum.reduce/3`, but breaks on error.
+
+  Behaves like `Enum.reduce/3` as long as given `fun` returns `{:ok, new_acc}`.
   If it happens to return `{{:error, reason}, new_acc}`, reduction is stopped and
-  error is returned.
+  the error is returned.
 
   ## Examples:
   ```
@@ -122,9 +125,11 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.reduce_while/3` as long as given `fun` returns
-  `{:ok, {:cont | :halt, new_acc}`. If it happens to return
-  `{{:error, reason}, new_acc}`, reduction is stopped and error is returned.
+  Works like `Enum.reduce_while/3`, but breaks on error.
+
+  Behaves like `Enum.reduce_while/3` as long as given `fun` returns
+  `{{:ok, :cont | :halt}, new_acc}`. If it happens to return
+  `{{:error, reason}, new_acc}`, reduction is stopped and the error is returend.
 
   ## Examples:
   ```
@@ -159,8 +164,10 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.each/2` as long as given `fun` returns `:ok`.
-  If it happens to return `{:error, reason}`, traversal is stopped and
+  Works like `Enum.each/2`, but breaks on error.
+
+  Behaves like `Enum.each/2` as long as given `fun` returns `:ok`.
+  If it happens to return `{:error, reason}`, traversal is stopped and the
   error is returned.
 
   ## Examples:
@@ -186,8 +193,10 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.map/2` as long as given `fun` returns `{:ok, value}`.
-  If it happens to return `{:error, reason}`, reduction is stopped and
+  Works like `Enum.map/2`, but breaks on error.
+
+  Behaves like `Enum.map/2` as long as given `fun` returns `{:ok, value}`.
+  If it happens to return `{:error, reason}`, reduction is stopped and the
   error is returned.
 
   ## Examples:
@@ -213,8 +222,10 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.flat_map/2` as long as reducing function returns `{:ok, values}`.
-  If it happens to return `{:error, reason}`, reduction is stopped and
+  Works like `Enum.flat_map/2`, but breaks on error.
+
+  Behaves like `Enum.flat_map/2` as long as reducing function returns `{:ok, values}`.
+  If it happens to return `{:error, reason}`, reduction is stopped and the
   error is returned.
 
   ## Examples:
@@ -240,9 +251,11 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.map_reduce/3` as long as given `fun` returns `{{:ok, value}, new_acc}`.
-  If it happens to return `{{:error, reason}, new_acc}`, reduction is stopped and
-  error is returned.
+  Works like `Enum.map_reduce/3`, but breaks on error.
+
+  Behaves like `Enum.map_reduce/3` as long as given `fun` returns
+  `{{:ok, value}, new_acc}`. If it happens to return `{{:error, reason}, new_acc}`,
+  reduction is stopped and the error is returend.
 
   ## Examples:
   ```
@@ -271,9 +284,11 @@ defmodule Bunch.Enum do
   end
 
   @doc """
-  Works like `Enum.flat_map_reduce/3` as long as given `fun` returns `{{:ok, value}, new_acc}`.
-  If it happens to return `{{:error, reason}, new_acc}`, reduction is stopped and
-  error is returned.
+  Works like `Enum.each/2`, but breaks on error.
+
+  Behaves like `Enum.flat_map_reduce/3` as long as given `fun` returns
+  `{{:ok, value}, new_acc}`. If it happens to return `{{:error, reason}, new_acc}`,
+  reduction is stopped and the error is returned.
 
   ## Examples:
   ```
