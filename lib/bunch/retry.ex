@@ -34,18 +34,18 @@ defmodule Bunch.Retry do
   2
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
   iex> #{inspect(__MODULE__)}.retry(
-  ...> fn -> :timer.sleep(10); Agent.get_and_update(pid, &{&1, &1+1}) end,
+  ...> fn -> :timer.sleep(50); Agent.get_and_update(pid, &{&1, &1+1}) end,
   ...> & &1 > 3,
-  ...> duration: 25
+  ...> duration: 80
   ...> )
-  2
+  1
   iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
   iex> #{inspect(__MODULE__)}.retry(
-  ...> fn -> :timer.sleep(7); Agent.get_and_update(pid, &{&1, &1+1}) end,
+  ...> fn -> :timer.sleep(30); Agent.get_and_update(pid, &{&1, &1+1}) end,
   ...> & &1 > 3,
-  ...> duration: 25, delay: 3
+  ...> duration: 80, delay: 20
   ...> )
-  2
+  1
   ```
   """
   @spec retry(
