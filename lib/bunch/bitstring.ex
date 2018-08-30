@@ -7,6 +7,14 @@ defmodule Bunch.Bitstring do
   Splits given bitstring into parts of given size.
 
   Remaining part is being cut off.
+
+  ## Examples
+  ```
+  iex> <<1, 2, 3, 4, 5, 6>> |> #{__MODULE__}.split(2)
+  [<<1, 2>>, <<3, 4>>, <<5, 6>>]
+  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{__MODULE__}.split(2)
+  [<<1, 2>>, <<3, 4>>, <<5, 6>>]
+  ```
   """
   @spec split(bitstring, pos_integer) :: [bitstring]
   def split(data, chunk_size) do
@@ -18,6 +26,14 @@ defmodule Bunch.Bitstring do
   Splits given bitstring into parts of given size.
 
   Returns list of chunks and remainder.
+
+  ## Examples
+  ```
+  iex> <<1, 2, 3, 4, 5, 6>> |> #{__MODULE__}.split_rem(2)
+  {[<<1, 2>>, <<3, 4>>, <<5, 6>>], <<>>}
+  iex> <<1, 2, 3, 4, 5, 6, 7>> |> #{__MODULE__}.split_rem(2)
+  {[<<1, 2>>, <<3, 4>>, <<5, 6>>], <<7>>}
+  ```
   """
   @spec split_rem(bitstring, chunk_size :: pos_integer) :: {[bitstring], remainder :: bitstring}
   def split_rem(data, chunk_size) do

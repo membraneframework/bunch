@@ -10,7 +10,6 @@ defmodule Bunch.MixProject do
       version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      preferred_cli_env: [espec: :test, format: :test],
       app: :bunch,
       name: "Bunch",
       description: "A bunch of helper functions, intended to make life easier",
@@ -46,8 +45,7 @@ defmodule Bunch.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:espec, "~> 1.6", only: :test}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 end
