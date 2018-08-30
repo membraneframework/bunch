@@ -5,26 +5,29 @@ defmodule Bunch.Bitstring do
 
   @doc """
   Splits given bitstring into parts of given size.
-  """
-  @spec split(bitstring, chunk_size :: pos_integer) :: {[bitstring], remainder :: bitstring}
-  def split(data, chunk_size) do
-    split_recurse(data, chunk_size)
-  end
 
-  @doc """
-  Same as `split/2`, but returns only list of chunks, remaining part is being
-  cut off.
+  Remaining part is being cut off.
   """
-  @spec split!(bitstring, pos_integer) :: [bitstring]
-  def split!(data, chunk_size) do
-    {result, _} = split(data, chunk_size)
+  @spec split(bitstring, pos_integer) :: [bitstring]
+  def split(data, chunk_size) do
+    {result, _} = split_rem(data, chunk_size)
     result
   end
 
-  defp split_recurse(data, chunk_size, acc \\ []) do
+  @doc """
+  Splits given bitstring into parts of given size.
+
+  Returns list of chunks and remainder.
+  """
+  @spec split_rem(bitstring, chunk_size :: pos_integer) :: {[bitstring], remainder :: bitstring}
+  def split_rem(data, chunk_size) do
+    do_split_rem(data, chunk_size)
+  end
+
+  defp do_split_rem(data, chunk_size, acc \\ []) do
     case data do
       <<chunk::binary-size(chunk_size)>> <> rest ->
-        split_recurse(rest, chunk_size, [chunk | acc])
+        do_split_rem(rest, chunk_size, [chunk | acc])
 
       rest ->
         {acc |> Enum.reverse(), rest}
