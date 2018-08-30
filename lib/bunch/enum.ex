@@ -9,46 +9,47 @@ defmodule Bunch.Enum do
   Generates a list consisting of `i` values `v`.
 
   ```
-  iex> #{__MODULE__}.repeat(4, :abc)
+  iex> #{__MODULE__}.repeated(:abc, 4)
   [:abc, :abc, :abc, :abc]
-  iex> #{__MODULE__}.repeat(0, :abc)
+  iex> #{__MODULE__}.repeated(:abc, 0)
   []
   ```
   """
-  @spec repeat(non_neg_integer, v) :: [v] when v: any()
-  def repeat(i, v) when i >= 0 do
-    do_repeat(i, v, [])
+  @spec repeated(v, non_neg_integer) :: [v] when v: any()
+  def repeated(v, i) when i >= 0 do
+    do_repeated(v, i, [])
   end
 
-  defp do_repeat(0, _v, acc) do
+  defp do_repeated(_v, 0, acc) do
     acc
   end
 
-  defp do_repeat(i, v, acc) do
-    do_repeat(i - 1, v, [v | acc])
+  defp do_repeated(v, i, acc) do
+    do_repeated(v, i - 1, [v | acc])
   end
 
   @doc """
   Generates a list by calling `i` times function `f`.
 
   ```
-  iex> #{__MODULE__}.repeatedly(4, fn -> :abc end)
-  [:abc, :abc, :abc, :abc]
-  iex> #{__MODULE__}.repeatedly(0, fn -> :abc end)
+  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+  iex> #{__MODULE__}.repeat(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, 4)
+  [0, 1, 2, 3]
+  iex> #{__MODULE__}.repeat(fn -> :abc end, 0)
   []
   ```
   """
-  @spec repeatedly(non_neg_integer, f :: (() -> a)) :: [a] when a: any()
-  def repeatedly(i, fun) when i >= 0 do
-    do_repeatedly(i, fun, [])
+  @spec repeat(f :: (() -> a), non_neg_integer) :: [a] when a: any()
+  def repeat(fun, i) when i >= 0 do
+    do_repeat(fun, i, [])
   end
 
-  defp do_repeatedly(0, _fun, acc) do
+  defp do_repeat(_fun, 0, acc) do
     acc |> Enum.reverse()
   end
 
-  defp do_repeatedly(i, fun, acc) do
-    do_repeatedly(i - 1, fun, [fun.() | acc])
+  defp do_repeat(fun, i, acc) do
+    do_repeat(fun, i - 1, [fun.() | acc])
   end
 
   @doc """
@@ -366,7 +367,7 @@ defmodule Bunch.Enum do
   def unzip([h | _] = list) when is_tuple(h) do
     do_unzip(
       list |> Enum.reverse(),
-      h |> tuple_size() |> repeat([])
+      [] |> repeated(h |> tuple_size())
     )
   end
 
