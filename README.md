@@ -1,21 +1,21 @@
 # Bunch
 
-**TODO: Add description**
+[![Build Status](https://travis-ci.com/membraneframework/bunch.svg?branch=master)](https://travis-ci.com/membraneframework/bunch)
+
+Bunch is a bunch of helper functions, intended to make life easier.
+
+API documentation is available at [HexDocs](https://hexdocs.pm/bunch/)
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `bunch` to your list of dependencies in `mix.exs`:
+Add the following line to your `deps` in `mix.exs`.  Run `mix deps.get`.
 
 ```elixir
-def deps do
-  [
-    {:bunch, "~> 0.1.0"}
-  ]
-end
+{:bunch, "~> 0.1"}
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/bunch](https://hexdocs.pm/bunch).
+## Copyright and License
 
+Copyright 2018, Software Mansion
+
+Licensed under the [Apache License, Version 2.0](LICENSE)
