@@ -4,6 +4,7 @@ defmodule Bunch.Enum do
   """
 
   use Bunch
+  alias Bunch.Type
 
   @doc """
   Generates a list consisting of `i` values `v`.
@@ -114,7 +115,7 @@ defmodule Bunch.Enum do
   ```
   """
   @spec try_reduce(Enum.t(), acc, fun :: (a, acc -> result)) :: result
-        when a: any(), acc: any(), result: {:ok, acc} | {{:error, any()}, acc}
+        when a: any(), acc: any(), result: Type.stateful_try_t(acc)
   def try_reduce(enum, acc, f) do
     Enum.reduce_while(enum, {:ok, acc}, fn e, {:ok, acc} ->
       with {:ok, new_acc} <- f.(e, acc) do
@@ -150,9 +151,9 @@ defmodule Bunch.Enum do
   @spec try_reduce_while(
           Enum.t(),
           acc,
-          reducer :: (a, acc -> {{:ok, :cont | :halt} | error, acc})
-        ) :: {:ok, acc} | {error, acc}
-        when a: any(), acc: any(), error: {:error, any()}
+          reducer :: (a, acc -> Type.stateful_try_t(:cont | :halt, acc))
+        ) :: Type.stateful_try_t(acc)
+        when a: any(), acc: any()
   def try_reduce_while(enum, acc, f) do
     Enum.reduce_while(enum, {:ok, acc}, fn e, {:ok, acc} ->
       with {{:ok, :cont}, new_acc} <- f.(e, acc) do
@@ -181,7 +182,7 @@ defmodule Bunch.Enum do
   ```
   """
   @spec try_each(Enum.t(), fun :: (a -> result)) :: result
-        when a: any(), result: :ok | {:error, any()}
+        when a: any(), result: Type.try_t()
   def try_each(enum, f), do: do_try_each(enum |> Enum.to_list(), f)
   defp do_try_each([], _f), do: :ok
 
@@ -209,8 +210,8 @@ defmodule Bunch.Enum do
   {:error, :zero}
   ```
   """
-  @spec try_map(Enum.t(), fun :: (a -> {:ok, b} | error)) :: {:ok, [b]} | error
-        when a: any(), b: any(), error: {:error, any()}
+  @spec try_map(Enum.t(), fun :: (a -> Type.try_t(b))) :: Type.try_t([b])
+        when a: any(), b: any()
   def try_map(enum, f), do: do_try_map(enum |> Enum.to_list(), f, [])
   defp do_try_map([], _f, acc), do: {:ok, acc |> Enum.reverse()}
 
@@ -239,7 +240,7 @@ defmodule Bunch.Enum do
   ```
   """
   @spec try_flat_map(Enum.t(), fun :: (a -> result)) :: result
-        when a: any(), b: any(), result: {:ok, [b]} | {:error, any()}
+        when a: any(), b: any(), result: Type.try_t([b])
   def try_flat_map(enum, f), do: do_try_flat_map(enum |> Enum.to_list(), f, [])
   defp do_try_flat_map([], _f, acc), do: {:ok, acc |> Enum.reverse()}
 
@@ -270,9 +271,9 @@ defmodule Bunch.Enum do
   {{:error, :negative_prefix_sum}, -1}
   ```
   """
-  @spec try_map_reduce(Enum.t(), acc, fun :: (a, acc -> {{:ok, b}, acc} | error)) ::
-          {{:ok, [b]}, acc} | error
-        when a: any(), b: any(), acc: any(), error: {:error, any()}
+  @spec try_map_reduce(Enum.t(), acc, fun :: (a, acc -> Type.stateful_try_t(b, acc))) ::
+          Type.stateful_try_t([b], acc)
+        when a: any(), b: any(), acc: any()
   def try_map_reduce(enum, acc, f), do: do_try_map_reduce(enum |> Enum.to_list(), acc, f, [])
   defp do_try_map_reduce([], f_acc, _f, acc), do: {{:ok, acc |> Enum.reverse()}, f_acc}
 
@@ -304,7 +305,7 @@ defmodule Bunch.Enum do
   ```
   """
   @spec try_flat_map_reduce(Enum.t(), acc, fun :: (a, acc -> result)) :: result
-        when a: any(), b: any(), acc: any(), result: {{:ok, [b]} | {:error, any()}, acc}
+        when a: any(), b: any(), acc: any(), result: Type.stateful_try_t([b], acc)
   def try_flat_map_reduce(enum, acc, f),
     do: try_flat_map_reduce(enum |> Enum.to_list(), acc, f, [])
 
