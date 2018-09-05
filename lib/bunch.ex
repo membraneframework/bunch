@@ -3,6 +3,8 @@ defmodule Bunch do
   A bunch of general-purpose helper and convenience functions.
   """
 
+  alias __MODULE__.Type
+
   @doc """
   Brings some useful functions to the scope.
   """
@@ -126,7 +128,7 @@ defmodule Bunch do
   @doc """
   Returns error tuple if given value is nil and ok tuple otherwise.
   """
-  @spec error_if_nil(value, reason) :: {:ok, value} | {:error, reason}
+  @spec error_if_nil(value, reason) :: Type.try_t(value)
         when value: any(), reason: any()
   def error_if_nil(nil, reason), do: {:error, reason}
   def error_if_nil(v, _), do: {:ok, v}
@@ -135,9 +137,9 @@ defmodule Bunch do
   Returns given stateful try value along with its status.
   """
   @spec stateful_try_with_status(result) :: {status, result}
-        when error: {:error, any()},
-             status: :ok | error,
-             result: {:ok | {:ok, value :: any()} | error, state :: any()}
+        when status: Type.try_t(),
+             result:
+               Type.stateful_try_t(state :: any) | Type.stateful_try_t(value :: any, state :: any)
   def stateful_try_with_status({:ok, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:ok, _res}, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:error, reason}, _state} = res), do: {{:error, reason}, res}
