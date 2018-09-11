@@ -385,7 +385,8 @@ defmodule Bunch.Enum do
   @doc """
   Returns elements that occur at least `min_occurences` times in enumerable.
 
-  Results are ordered descending by the index of `min_occurences`-th duplicate.
+  Results are NOT ordered in any sensible way, neither is the order anyhow preserved,
+  but it is deterministic.
 
   ## Examples
   ```
