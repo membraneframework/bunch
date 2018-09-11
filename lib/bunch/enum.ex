@@ -380,4 +380,29 @@ defmodule Bunch.Enum do
     acc = h |> Tuple.to_list() |> Enum.zip(acc) |> Enum.map(fn {t, r} -> [t | r] end)
     do_unzip(t, acc)
   end
+
+  @spec duplicates(Enum.t(), pos_integer) :: list()
+  @doc """
+  Returns elements that occur at least `min_occurences` times in enumerable.
+
+  Results are NOT ordered in any sensible way, neither is the order anyhow preserved,
+  but it is deterministic.
+
+  ## Examples
+  ```
+  iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2])
+  [2, 3]
+  iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2], 3)
+  [2]
+  ```
+  """
+  def duplicates(enum, min_occurences \\ 2) do
+    enum
+    |> Enum.reduce({%{}, []}, fn v, {existent, duplicates} ->
+      {occurences, existent} = existent |> Map.get_and_update(v, &{&1 || 1, (&1 || 1) + 1})
+      duplicates = if occurences == min_occurences, do: [v | duplicates], else: duplicates
+      {existent, duplicates}
+    end)
+    ~> ({_, duplicates} -> duplicates)
+  end
 end
