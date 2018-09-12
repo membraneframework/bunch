@@ -22,31 +22,31 @@ defmodule Bunch.Retry do
   - delay - introduces delay (`:timer.sleep/1`) before each retry
 
   ## Examples
-  ```
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3)
-  4
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 10)
-  4
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 2)
-  2
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.retry(
-  ...> fn -> :timer.sleep(50); Agent.get_and_update(pid, &{&1, &1+1}) end,
-  ...> & &1 > 3,
-  ...> duration: 80
-  ...> )
-  1
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.retry(
-  ...> fn -> :timer.sleep(30); Agent.get_and_update(pid, &{&1, &1+1}) end,
-  ...> & &1 > 3,
-  ...> duration: 80, delay: 20
-  ...> )
-  1
-  ```
+
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3)
+      4
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 10)
+      4
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.retry(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, & &1 > 3, times: 2)
+      2
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.retry(
+      ...> fn -> :timer.sleep(50); Agent.get_and_update(pid, &{&1, &1+1}) end,
+      ...> & &1 > 3,
+      ...> duration: 80
+      ...> )
+      1
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.retry(
+      ...> fn -> :timer.sleep(30); Agent.get_and_update(pid, &{&1, &1+1}) end,
+      ...> & &1 > 3,
+      ...> duration: 80, delay: 20
+      ...> )
+      1
+
   """
   @spec retry(
           fun :: (() -> res),

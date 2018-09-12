@@ -9,12 +9,12 @@ defmodule Bunch.Enum do
   @doc """
   Generates a list consisting of `i` values `v`.
 
-  ```
-  iex> #{inspect(__MODULE__)}.repeated(:abc, 4)
-  [:abc, :abc, :abc, :abc]
-  iex> #{inspect(__MODULE__)}.repeated(:abc, 0)
-  []
-  ```
+
+      iex> #{inspect(__MODULE__)}.repeated(:abc, 4)
+      [:abc, :abc, :abc, :abc]
+      iex> #{inspect(__MODULE__)}.repeated(:abc, 0)
+      []
+
   """
   @spec repeated(v, non_neg_integer) :: [v] when v: any()
   def repeated(v, i) when i >= 0 do
@@ -32,13 +32,13 @@ defmodule Bunch.Enum do
   @doc """
   Generates a list by calling `i` times function `f`.
 
-  ```
-  iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
-  iex> #{inspect(__MODULE__)}.repeat(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, 4)
-  [0, 1, 2, 3]
-  iex> #{inspect(__MODULE__)}.repeat(fn -> :abc end, 0)
-  []
-  ```
+
+      iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
+      iex> #{inspect(__MODULE__)}.repeat(fn -> Agent.get_and_update(pid, &{&1, &1+1}) end, 4)
+      [0, 1, 2, 3]
+      iex> #{inspect(__MODULE__)}.repeat(fn -> :abc end, 0)
+      []
+
   """
   @spec repeat(f :: (() -> a), non_neg_integer) :: [a] when a: any()
   def repeat(fun, i) when i >= 0 do
@@ -60,12 +60,12 @@ defmodule Bunch.Enum do
   current and previous element of enumerable.
 
   ## Examples:
-  ```
-  iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end)
-  [[1, 2], [5, 5]]
-  iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end, &Enum.sum/1)
-  [3, 10]
-  ```
+
+      iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end)
+      [[1, 2], [5, 5]]
+      iex> #{inspect(__MODULE__)}.chunk_by_prev([1,2,5,5], fn x, y -> x - y <= 2 end, &Enum.sum/1)
+      [3, 10]
+
   """
   @spec chunk_by_prev(Enum.t(), chunker :: (a, a -> boolean), collector :: ([a] -> b)) :: [b]
         when a: any(), b: any()
@@ -103,16 +103,16 @@ defmodule Bunch.Enum do
   the error is returned.
 
   ## Examples:
-  ```
-  iex> fun = fn
-  ...> x, acc when acc >= 0 -> {:ok,  x + acc}
-  ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
-  ...> end
-  iex> #{inspect(__MODULE__)}.try_reduce([1,5,-2,8], 0, fun)
-  {:ok, 12}
-  iex> #{inspect(__MODULE__)}.try_reduce([1,5,-7,8], 0, fun)
-  {{:error, :negative_prefix_sum}, -1}
-  ```
+
+      iex> fun = fn
+      ...> x, acc when acc >= 0 -> {:ok,  x + acc}
+      ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
+      ...> end
+      iex> #{inspect(__MODULE__)}.try_reduce([1,5,-2,8], 0, fun)
+      {:ok, 12}
+      iex> #{inspect(__MODULE__)}.try_reduce([1,5,-7,8], 0, fun)
+      {{:error, :negative_prefix_sum}, -1}
+
   """
   @spec try_reduce(Enum.t(), acc, fun :: (a, acc -> result)) :: result
         when a: any(), acc: any(), result: Type.stateful_try_t(acc)
@@ -134,19 +134,19 @@ defmodule Bunch.Enum do
   `{{:error, reason}, new_acc}`, reduction is stopped and the error is returend.
 
   ## Examples:
-  ```
-  iex> fun = fn
-  ...> 0, acc -> {{:ok, :halt}, acc}
-  ...> x, acc when acc >= 0 -> {{:ok, :cont}, x + acc}
-  ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
-  ...> end
-  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-2,8], 0, fun)
-  {:ok, 12}
-  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,0,8], 0, fun)
-  {:ok, 6}
-  iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-7,8], 0, fun)
-  {{:error, :negative_prefix_sum}, -1}
-  ```
+
+      iex> fun = fn
+      ...> 0, acc -> {{:ok, :halt}, acc}
+      ...> x, acc when acc >= 0 -> {{:ok, :cont}, x + acc}
+      ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
+      ...> end
+      iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-2,8], 0, fun)
+      {:ok, 12}
+      iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,0,8], 0, fun)
+      {:ok, 6}
+      iex> #{inspect(__MODULE__)}.try_reduce_while([1,5,-7,8], 0, fun)
+      {{:error, :negative_prefix_sum}, -1}
+
   """
   @spec try_reduce_while(
           Enum.t(),
@@ -173,13 +173,13 @@ defmodule Bunch.Enum do
   error is returned.
 
   ## Examples:
-  ```
-  iex> fun = fn 0 -> {:error, :zero}; x -> send(self(), 1/x); :ok end
-  iex> #{inspect(__MODULE__)}.try_each([1,2,3], fun)
-  :ok
-  iex> #{inspect(__MODULE__)}.try_each([1,0,3], fun)
-  {:error, :zero}
-  ```
+
+      iex> fun = fn 0 -> {:error, :zero}; x -> send(self(), 1/x); :ok end
+      iex> #{inspect(__MODULE__)}.try_each([1,2,3], fun)
+      :ok
+      iex> #{inspect(__MODULE__)}.try_each([1,0,3], fun)
+      {:error, :zero}
+
   """
   @spec try_each(Enum.t(), fun :: (a -> result)) :: result
         when a: any(), result: Type.try_t()
@@ -202,13 +202,13 @@ defmodule Bunch.Enum do
   error is returned.
 
   ## Examples:
-  ```
-  iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, 1/x} end
-  iex> #{inspect(__MODULE__)}.try_map([1,5,-2,8], fun)
-  {:ok, [1.0, 0.2, -0.5, 0.125]}
-  iex> #{inspect(__MODULE__)}.try_map([1,5,0,8], fun)
-  {:error, :zero}
-  ```
+
+      iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, 1/x} end
+      iex> #{inspect(__MODULE__)}.try_map([1,5,-2,8], fun)
+      {:ok, [1.0, 0.2, -0.5, 0.125]}
+      iex> #{inspect(__MODULE__)}.try_map([1,5,0,8], fun)
+      {:error, :zero}
+
   """
   @spec try_map(Enum.t(), fun :: (a -> Type.try_t(b))) :: Type.try_t([b])
         when a: any(), b: any()
@@ -231,13 +231,13 @@ defmodule Bunch.Enum do
   error is returned.
 
   ## Examples:
-  ```
-  iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, [1/x, 2/x, 3/x]} end
-  iex> #{inspect(__MODULE__)}.try_flat_map([1,5,-2,8], fun)
-  {:ok, [1.0, 2.0, 3.0, 0.2, 0.4, 0.6, -0.5, -1.0, -1.5, 0.125, 0.25, 0.375]}
-  iex> #{inspect(__MODULE__)}.try_flat_map([1,5,0,8], fun)
-  {:error, :zero}
-  ```
+
+      iex> fun = fn 0 -> {:error, :zero}; x -> {:ok, [1/x, 2/x, 3/x]} end
+      iex> #{inspect(__MODULE__)}.try_flat_map([1,5,-2,8], fun)
+      {:ok, [1.0, 2.0, 3.0, 0.2, 0.4, 0.6, -0.5, -1.0, -1.5, 0.125, 0.25, 0.375]}
+      iex> #{inspect(__MODULE__)}.try_flat_map([1,5,0,8], fun)
+      {:error, :zero}
+
   """
   @spec try_flat_map(Enum.t(), fun :: (a -> result)) :: result
         when a: any(), b: any(), result: Type.try_t([b])
@@ -260,16 +260,16 @@ defmodule Bunch.Enum do
   reduction is stopped and the error is returend.
 
   ## Examples:
-  ```
-  iex> fun = fn
-  ...> x, acc when acc >= 0 -> {{:ok, x+1}, x + acc}
-  ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
-  ...> end
-  iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-2,8], 0, fun)
-  {{:ok, [2,6,-1,9]}, 12}
-  iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-7,8], 0, fun)
-  {{:error, :negative_prefix_sum}, -1}
-  ```
+
+      iex> fun = fn
+      ...> x, acc when acc >= 0 -> {{:ok, x+1}, x + acc}
+      ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
+      ...> end
+      iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-2,8], 0, fun)
+      {{:ok, [2,6,-1,9]}, 12}
+      iex> #{inspect(__MODULE__)}.try_map_reduce([1,5,-7,8], 0, fun)
+      {{:error, :negative_prefix_sum}, -1}
+
   """
   @spec try_map_reduce(Enum.t(), acc, fun :: (a, acc -> Type.stateful_try_t(b, acc))) ::
           Type.stateful_try_t([b], acc)
@@ -293,16 +293,16 @@ defmodule Bunch.Enum do
   reduction is stopped and the error is returned.
 
   ## Examples:
-  ```
-  iex> fun = fn
-  ...> x, acc when acc >= 0 -> {{:ok, [x+1, x+2, x+3]}, x + acc}
-  ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
-  ...> end
-  iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-2,8], 0, fun)
-  {{:ok, [2,3,4,6,7,8,-1,0,1,9,10,11]}, 12}
-  iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-7,8], 0, fun)
-  {{:error, :negative_prefix_sum}, -1}
-  ```
+
+      iex> fun = fn
+      ...> x, acc when acc >= 0 -> {{:ok, [x+1, x+2, x+3]}, x + acc}
+      ...> _, acc -> {{:error, :negative_prefix_sum}, acc}
+      ...> end
+      iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-2,8], 0, fun)
+      {{:ok, [2,3,4,6,7,8,-1,0,1,9,10,11]}, 12}
+      iex> #{inspect(__MODULE__)}.try_flat_map_reduce([1,5,-7,8], 0, fun)
+      {{:error, :negative_prefix_sum}, -1}
+
   """
   @spec try_flat_map_reduce(Enum.t(), acc, fun :: (a, acc -> result)) :: result
         when a: any(), b: any(), acc: any(), result: Type.stateful_try_t([b], acc)
@@ -324,10 +324,10 @@ defmodule Bunch.Enum do
   Works the same way as `Enum.zip/1`, but does not cut off remaining values.
 
   ## Examples:
-  ```
-  iex> #{inspect(__MODULE__)}.zip_longest([[1, 2] ,[3 ,4, 5]])
-  [[1, 3], [2, 4], [5]]
-  ```
+
+      iex> #{inspect(__MODULE__)}.zip_longest([[1, 2] ,[3 ,4, 5]])
+      [[1, 3], [2, 4], [5]]
+
   It also returns list of lists, as opposed to tuples.
   """
   @spec zip_longest(list()) :: list(list())
@@ -355,12 +355,12 @@ defmodule Bunch.Enum do
   Size of returned tuple is equal to size of the shortest tuple in `tuples`.
 
   ## Examples:
-  ```
-  iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}])
-  {[1, 4, 7, 10], [2, 5, 8, 11], [3, 6, 9, 12]}
-  iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5}, {6,7,8,9}, {10,11,12}])
-  {[1, 4, 6, 10], [2, 5, 7, 11]}
-  ```
+
+      iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5,6}, {7,8,9}, {10,11,12}])
+      {[1, 4, 7, 10], [2, 5, 8, 11], [3, 6, 9, 12]}
+      iex> #{inspect(__MODULE__)}.unzip([{1,2,3}, {4,5}, {6,7,8,9}, {10,11,12}])
+      {[1, 4, 6, 10], [2, 5, 7, 11]}
+
   """
   @spec unzip(tuples :: [tuple()]) :: tuple()
   def unzip([]), do: {}
@@ -389,12 +389,12 @@ defmodule Bunch.Enum do
   but it is deterministic.
 
   ## Examples
-  ```
-  iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2])
-  [2, 3]
-  iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2], 3)
-  [2]
-  ```
+
+      iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2])
+      [2, 3]
+      iex> Bunch.Enum.duplicates([1,3,2,5,3,2,2], 3)
+      [2]
+
   """
   def duplicates(enum, min_occurences \\ 2) do
     enum
