@@ -14,16 +14,16 @@ defmodule Bunch.Typespec do
   in form of `@t [x, y, z, ...]` at once.
 
   ## Example
-  ```
-  iex> defmodule Abc do
-  ...> use #{inspect(__MODULE__)}
-  ...> @list_type t :: [:a, :b, :c]
-  ...> @spec get_at(0..2) :: t
-  ...> def get_at(x), do: @t |> Enum.at(x)
-  ...> end
-  iex> Abc.get_at(1)
-  :b
-  ```
+
+      iex> defmodule Abc do
+      ...> use #{inspect(__MODULE__)}
+      ...> @list_type t :: [:a, :b, :c]
+      ...> @spec get_at(0..2) :: t
+      ...> def get_at(x), do: @t |> Enum.at(x)
+      ...> end
+      iex> Abc.get_at(1)
+      :b
+
   """
   defmacro @{:list_type, _, [{:::, _, [{name, _, _} = name_var, list]}]} do
     type = list |> Enum.reduce(fn a, b -> {:|, [], [a, b]} end)

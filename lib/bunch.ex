@@ -28,19 +28,19 @@ defmodule Bunch do
   from else clauses. That is why labels have to be known at the compile time.
 
   ## Examples
-  ```
-  iex> use Bunch
-  iex> list = [-1, 3, 2]
-  iex> binary = <<1,2>>
-  iex> withl max: i when i > 0 <- list |> Enum.max(),
-  ...>       bin: <<b::binary-size(i), _::binary>> <- binary do
-  ...>   {list, b}
-  ...> else
-  ...>   max: i -> {:error, :invalid_maximum, i}
-  ...>   bin: b -> {:error, :binary_too_short, b, i}
-  ...> end
-  {:error, :binary_too_short, <<1,2>>, 3}
-  ```
+
+      iex> use Bunch
+      iex> list = [-1, 3, 2]
+      iex> binary = <<1,2>>
+      iex> withl max: i when i > 0 <- list |> Enum.max(),
+      ...>       bin: <<b::binary-size(i), _::binary>> <- binary do
+      ...>   {list, b}
+      ...> else
+      ...>   max: i -> {:error, :invalid_maximum, i}
+      ...>   bin: b -> {:error, :binary_too_short, b, i}
+      ...> end
+      {:error, :binary_too_short, <<1,2>>, 3}
+
   """
   @spec withl(keyword(with_clause :: term), do: code_block :: term(), else: match_clauses :: term) ::
           term
@@ -52,16 +52,16 @@ defmodule Bunch do
   Works like `withl/2`, but allows shorter syntax.
 
   ## Examples
-  ```
-  iex> use Bunch
-  iex> x = 1
-  iex> y = 2
-  iex> withl a: true <- x > 0,
-  ...>       b: false <- y |> rem(2) == 0,
-  ...>       do: {x, y},
-  ...>       else: (a: false -> {:error, :x}; b: true -> {:error, :y})
-  {:error, :y}
-  ```
+
+      iex> use Bunch
+      iex> x = 1
+      iex> y = 2
+      iex> withl a: true <- x > 0,
+      ...>       b: false <- y |> rem(2) == 0,
+      ...>       do: {x, y},
+      ...>       else: (a: false -> {:error, :x}; b: true -> {:error, :y})
+      {:error, :y}
+
 
   For more details and more verbose and readable syntax, check docs for `withl/2`.
   """
@@ -109,12 +109,12 @@ defmodule Bunch do
   works as identity.
 
   ## Examples
-  ```
-  iex> #{inspect(__MODULE__)}.listify(:a)
-  [:a]
-  iex> #{inspect(__MODULE__)}.listify([:a, :b, :c])
-  [:a, :b, :c]
-  ```
+
+      iex> #{inspect(__MODULE__)}.listify(:a)
+      [:a]
+      iex> #{inspect(__MODULE__)}.listify([:a, :b, :c])
+      [:a, :b, :c]
+
   """
   @spec listify(a | [a]) :: [a] when a: any
   def listify(list) when is_list(list) do
@@ -148,12 +148,12 @@ defmodule Bunch do
   Returns `value` decreased by `value (mod divisor)`
 
   ## Examples
-  ```
-  iex> #{inspect(__MODULE__)}.int_part(10, 4)
-  8
-  iex> #{inspect(__MODULE__)}.int_part(7, 7)
-  7
-  ```
+
+      iex> #{inspect(__MODULE__)}.int_part(10, 4)
+      8
+      iex> #{inspect(__MODULE__)}.int_part(7, 7)
+      7
+
   """
   @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
   def int_part(value, divisor) do
@@ -166,27 +166,27 @@ defmodule Bunch do
   or lambda-like syntax.
 
   ## Examples
-  ```
-  iex> use #{inspect(__MODULE__)}
-  iex> {:ok, 10} ~> ({:ok, x} -> x)
-  10
-  iex> 5 ~> &1 + 2
-  7
-  ```
+
+      iex> use #{inspect(__MODULE__)}
+      iex> {:ok, 10} ~> ({:ok, x} -> x)
+      10
+      iex> 5 ~> &1 + 2
+      7
+
 
   Useful especially when dealing with a pipeline of operations (made up e.g.
   with pipe (`|>`) operator) some of which are hard to express in such form:
-  ```
-  iex> use #{inspect(__MODULE__)}
-  iex> ["Joe", "truck", "jacket"]
-  ...> |> Enum.map(&String.downcase/1)
-  ...> |> Enum.filter(& &1 |> String.starts_with?("j"))
-  ...> ~> ["Words:" | &1]
-  ...> |> Enum.join("\\n")
-  "Words:
-  joe
-  jacket"
-  ```
+
+      iex> use #{inspect(__MODULE__)}
+      iex> ["Joe", "truck", "jacket"]
+      ...> |> Enum.map(&String.downcase/1)
+      ...> |> Enum.filter(& &1 |> String.starts_with?("j"))
+      ...> ~> ["Words:" | &1]
+      ...> |> Enum.join("\\n")
+      "Words:
+      joe
+      jacket"
+
   """
   # Case when the mapper is a list of match clauses
   defmacro value ~> ([{:->, _, _} | _] = mapper) do
@@ -209,13 +209,13 @@ defmodule Bunch do
   identity clause at the end.
 
   ## Examples
-  ```
-  iex> use #{inspect(__MODULE__)}
-  iex> {:ok, 10} ~>> ({:ok, x} -> {:ok, x+1})
-  {:ok, 11}
-  iex> :error ~>> ({:ok, x} -> {:ok, x+1})
-  :error
-  ```
+
+      iex> use #{inspect(__MODULE__)}
+      iex> {:ok, 10} ~>> ({:ok, x} -> {:ok, x+1})
+      {:ok, 11}
+      iex> :error ~>> ({:ok, x} -> {:ok, x+1})
+      :error
+
   """
   defmacro value ~>> mapper_clauses do
     default =
@@ -234,26 +234,26 @@ defmodule Bunch do
   Macro providing support for python-style condition notation.
 
   ## Examples
-  ```
-  iex> use #{inspect(__MODULE__)}
-  iex> x = 10
-  iex> x |> provided(that: x > 0, else: 0)
-  10
-  iex> x = -4
-  iex> x |> provided(that: x > 0, else: 0)
-  0
-  ```
+
+      iex> use #{inspect(__MODULE__)}
+      iex> x = 10
+      iex> x |> provided(that: x > 0, else: 0)
+      10
+      iex> x = -4
+      iex> x |> provided(that: x > 0, else: 0)
+      0
+
 
   Apart from `that`, supported are also `do` and `not` keys:
-  ```
-  iex> use #{inspect(__MODULE__)}
-  iex> x = -4
-  iex> x |> provided do x > 0 else 0 end
-  0
-  iex> x = -4
-  iex> x |> provided(not: x > 0, else: 0)
-  -4
-  ```
+
+      iex> use #{inspect(__MODULE__)}
+      iex> x = -4
+      iex> x |> provided do x > 0 else 0 end
+      0
+      iex> x = -4
+      iex> x |> provided(not: x > 0, else: 0)
+      -4
+
   """
   defmacro provided(value, that: condition, else: default),
     do: do_provided(value, condition, default)
