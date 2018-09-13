@@ -27,6 +27,11 @@ defmodule Bunch do
   Labels also make it possible to access results of already succeeded matches
   from else clauses. That is why labels have to be known at the compile time.
 
+  There should be at least one clause in the else block for each label that
+  corresponds to a `<-` clause.
+
+  Duplicate labels are allowed.
+
   ## Examples
   ```
   iex> use Bunch
@@ -45,7 +50,7 @@ defmodule Bunch do
   @spec withl(keyword(with_clause :: term), do: code_block :: term(), else: match_clauses :: term) ::
           term
   defmacro withl(with_clauses, do: block, else: else_clauses) do
-    do_withl(with_clauses, block, else_clauses)
+    do_withl(with_clauses, block, else_clauses, __CALLER__)
   end
 
   @doc """
@@ -76,10 +81,10 @@ defmodule Bunch do
     {{:else, else_clauses}, keyword} = keyword |> List.pop_at(-1)
     {{:do, block}, keyword} = keyword |> List.pop_at(-1)
     with_clauses = keyword
-    do_withl(with_clauses, block, else_clauses)
+    do_withl(with_clauses, block, else_clauses, __CALLER__)
   end
 
-  defp do_withl(with_clauses, block, else_clauses) do
+  defp do_withl(with_clauses, block, else_clauses, caller) do
     else_clauses =
       else_clauses
       |> Enum.map(fn {:->, meta, [[[{label, left}]], right]} ->
@@ -89,18 +94,28 @@ defmodule Bunch do
 
     with_clauses
     |> Enum.reverse()
-    |> Enum.reduce(block, fn {label, clause}, acc ->
-      else_block =
-        case else_clauses[label] do
-          nil -> []
-          clauses -> [else: clauses]
+    |> Enum.reduce(block, fn
+      {label, {:<-, meta, _args} = clause}, acc ->
+        label_else_clauses =
+          else_clauses
+          |> Map.get_lazy(label, fn ->
+            raise SyntaxError,
+              file: caller.file,
+              line: meta |> Keyword.get(:line, caller.line),
+              description: "Label `#{inspect(label)}` not present in withl else clauses"
+          end)
+
+        args = [clause, [do: acc] ++ [else: label_else_clauses]]
+
+        quote do
+          with unquote_splicing(args)
         end
 
-      args = [clause, [do: acc] ++ else_block]
-
-      quote do
-        with unquote_splicing(args)
-      end
+      {_label, clause}, acc ->
+        quote do
+          unquote(clause)
+          unquote(acc)
+        end
     end)
   end
 
