@@ -27,7 +27,7 @@ defmodule Bunch.Map do
 
   """
   @spec map_values(%{k => v1}, (v1 -> v2)) :: %{k => v2} when k: any, v1: any, v2: any
-  def map_values(enum, f) do
-    enum |> Enum.into(Map.new(), fn {key, value} -> {key, f.(value)} end)
+  def map_values(map, f) do
+    map |> Enum.into(Map.new(), fn {key, value} -> {key, f.(value)} end)
   end
 end
