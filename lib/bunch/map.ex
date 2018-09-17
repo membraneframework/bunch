@@ -30,4 +30,30 @@ defmodule Bunch.Map do
   def map_values(map, f) do
     map |> Enum.into(Map.new(), fn {key, value} -> {key, f.(value)} end)
   end
+
+  @doc """
+  Moves value stored at `old_key` to `new_key`.
+
+  If `old_key` is not present in `map`, `new_key` is removed. If `new_key`
+  is present in `map`, it's value is overwritten.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :a, :c)
+      %{b: 2, c: 1}
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :a, :b)
+      %{b: 1}
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :c, :b)
+      %{a: 1}
+
+  """
+  @spec move(%{k => v}, old_key :: k, new_key :: k) :: %{k => v} when k: any, v: any
+  def move(map, old_key, new_key) do
+    if map |> Map.has_key?(old_key) do
+      {value, map} = map |> Map.pop(old_key)
+      map |> Map.put(new_key, value)
+    else
+      map |> Map.delete(new_key)
+    end
+  end
 end
