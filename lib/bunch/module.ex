@@ -36,4 +36,19 @@ defmodule Bunch.Module do
   def loaded_and_function_exported?(module, fun_name, arity) do
     module |> Code.ensure_loaded?() and module |> function_exported?(fun_name, arity)
   end
+
+  @doc """
+  Works like `Kernel.apply/3` if `module` exports `fun_name/length(args)`,
+  otherwise returns `default`.
+
+  Determines if function is exported using `loaded_and_function_exported?/3`.
+  """
+  @spec apply(module, fun_name :: atom, args :: list, default :: any) :: any
+  def apply(module, fun_name, args, default) do
+    if module |> loaded_and_function_exported?(fun_name, length(args)) do
+      module |> Kernel.apply(fun_name, args)
+    else
+      default
+    end
+  end
 end
