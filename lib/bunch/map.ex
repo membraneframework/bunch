@@ -27,7 +27,48 @@ defmodule Bunch.Map do
 
   """
   @spec map_values(%{k => v1}, (v1 -> v2)) :: %{k => v2} when k: any, v1: any, v2: any
-  def map_values(enum, f) do
-    enum |> Enum.into(Map.new(), fn {key, value} -> {key, f.(value)} end)
+  def map_values(map, f) do
+    map |> Enum.into(Map.new(), fn {key, value} -> {key, f.(value)} end)
+  end
+
+  @doc """
+  Moves value stored at `old_key` to `new_key`.
+
+  If `old_key` is not present in `map`, `default_value` is stored at `new_key`.
+  If `new_key` is present in `map`, it's value is overwritten.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :a, :c, 3)
+      %{b: 2, c: 1}
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :a, :b, 3)
+      %{b: 1}
+      iex> #{inspect(__MODULE__)}.move(%{a: 1, b: 2}, :c, :b, 3)
+      %{a: 1, b: 3}
+
+  """
+  @spec move(%{k => v}, old_key :: k, new_key :: k, default_value :: v) :: %{k => v}
+        when k: any, v: any
+  def move(map, old_key, new_key, default_value) do
+    {value, map} = map |> Map.pop(old_key, default_value)
+    map |> Map.put(new_key, value)
+  end
+
+  @doc """
+  Works like `move/3`, but fails if either `old_key` is absent or `new_key` is present
+  in `map`.
+
+  ## Example
+
+      iex> #{inspect(__MODULE__)}.move!(%{a: 1, b: 2}, :a, :c)
+      %{b: 2, c: 1}
+
+  """
+  @spec move!(%{k => v}, old_key :: k, new_key :: k) :: %{k => v} | no_return
+        when k: any, v: any
+  def move!(map, old_key, new_key) do
+    true = Map.has_key?(map, old_key) and not Map.has_key?(map, new_key)
+    {value, map} = map |> Map.pop(old_key)
+    map |> Map.put(new_key, value)
   end
 end
