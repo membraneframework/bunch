@@ -188,6 +188,8 @@ defmodule Bunch do
       iex> 5 ~> &1 + 2
       7
 
+  Lambda-like expressions are not converted to lambdas under the hood, but
+  result of `expr` is injected to `&1` at the compile time.
 
   Useful especially when dealing with a pipeline of operations (made up e.g.
   with pipe (`|>`) operator) some of which are hard to express in such form:
@@ -204,18 +206,26 @@ defmodule Bunch do
 
   """
   # Case when the mapper is a list of match clauses
-  defmacro value ~> ([{:->, _, _} | _] = mapper) do
+  defmacro expr ~> ([{:->, _, _} | _] = mapper) do
     quote do
-      case unquote(value) do
+      case unquote(expr) do
         unquote(mapper)
       end
     end
   end
 
   # Case when the mapper is a piece of lambda-like code
-  defmacro x ~> mapper do
+  defmacro expr ~> mapper do
+    mapped =
+      mapper
+      |> Macro.prewalk(fn
+        {:&, _meta, [1]} -> quote do: expr_result
+        other -> other
+      end)
+
     quote do
-      unquote({:&, [], [mapper]}).(unquote(x))
+      expr_result = unquote(expr)
+      unquote(mapped)
     end
   end
 
@@ -232,14 +242,14 @@ defmodule Bunch do
       :error
 
   """
-  defmacro value ~>> mapper_clauses do
+  defmacro expr ~>> mapper_clauses do
     default =
       quote do
-        _ -> unquote(value)
+        _ -> unquote(expr)
       end
 
     quote do
-      case unquote(value) do
+      case unquote(expr) do
         unquote(mapper_clauses ++ default)
       end
     end
@@ -270,19 +280,19 @@ defmodule Bunch do
       -4
 
   """
-  defmacro provided(value, that: condition, else: default),
-    do: do_provided(value, condition, default)
+  defmacro provided(expr, that: condition, else: default),
+    do: do_provided(expr, condition, default)
 
-  defmacro provided(value, do: condition, else: default),
-    do: do_provided(value, condition, default)
+  defmacro provided(expr, do: condition, else: default),
+    do: do_provided(expr, condition, default)
 
-  defmacro provided(value, not: condition, else: default),
-    do: do_provided(default, condition, value)
+  defmacro provided(expr, not: condition, else: default),
+    do: do_provided(default, condition, expr)
 
-  defp do_provided(value, condition, default) do
+  defp do_provided(expr, condition, default) do
     quote do
       if unquote(condition) do
-        unquote(value)
+        unquote(expr)
       else
         unquote(default)
       end
