@@ -19,6 +19,28 @@ defmodule Bunch.Access do
   end
 
   @doc """
+  Implements `Access` behaviour by delegating callbacks to `Map` module.
+
+  All the callbacks are overridable.
+  """
+  defmacro __using__(_args) do
+    quote do
+      @behaviour Access
+
+      @impl true
+      defdelegate fetch(term, key), to: Map
+
+      @impl true
+      defdelegate get_and_update(data, key, list), to: Map
+
+      @impl true
+      defdelegate pop(data, key), to: Map
+
+      defoverridable Access
+    end
+  end
+
+  @doc """
   #{@gen_common_docs.("get_in/2")}
   """
   @spec get_in(Access.t(), Access.key() | [Access.key()]) :: Access.value()
