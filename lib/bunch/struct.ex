@@ -36,8 +36,8 @@ defmodule Bunch.Struct do
   @doc """
   #{@gen_common_docs.("get_and_update_in/3")}
   """
-  @spec get_and_update_in(struct, Access.key() | [Access.key()], (a -> a)) :: {a, struct}
-        when a: Access.value()
+  @spec get_and_update_in(struct, Access.key() | [Access.key()], (a -> {b, a})) :: {b, struct}
+        when a: Access.value(), b: any
   def get_and_update_in(struct, keys, f),
     do: struct |> Bunch.Access.get_and_update_in(keys |> map_keys(), f)
 

@@ -65,8 +65,9 @@ defmodule Bunch.Access do
   @doc """
   #{@gen_common_docs.("get_and_update_in/3")}
   """
-  @spec get_and_update_in(Access.t(), Access.key() | [Access.key()], (a -> a)) :: {a, Access.t()}
-        when a: Access.value()
+  @spec get_and_update_in(Access.t(), Access.key() | [Access.key()], (a -> {b, a})) ::
+          {b, Access.t()}
+        when a: Access.value(), b: any
   def get_and_update_in(container, [], f), do: f.(container)
 
   def get_and_update_in(container, keys, f),
