@@ -7,7 +7,7 @@ defmodule Bunch.Process do
   Sends message when system time reaches given amount of milliseconds.
 
   Works the same way as `Process.send_after/4` with `abs` option set to `true`,
-  but accepts time expressend in milliseconds and as system time instead of
+  but accepts time expressed in milliseconds and as system time instead of
   monotonic time.
 
   Calls `Process.send_after/3` under the hood and returns reference that can
