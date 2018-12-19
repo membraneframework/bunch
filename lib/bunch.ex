@@ -97,13 +97,9 @@ defmodule Bunch do
     |> Enum.reduce(block, fn
       {label, {:<-, meta, _args} = clause}, acc ->
         label_else_clauses =
-          else_clauses
-          |> Map.get_lazy(label, fn ->
-            raise SyntaxError,
-              file: caller.file,
-              line: meta |> Keyword.get(:line, caller.line),
-              description: "Label `#{inspect(label)}` not present in withl else clauses"
-          end)
+          else_clauses[label] ||
+            "Label `#{inspect(label)}` not present in withl else clauses"
+            |> raise_compile_error(caller, meta)
 
         args = [clause, [do: acc] ++ [else: label_else_clauses]]
 
@@ -219,8 +215,21 @@ defmodule Bunch do
     mapped =
       mapper
       |> Macro.prewalk(fn
-        {:&, _meta, [1]} -> quote do: expr_result
-        other -> other
+        {:&, _meta, [1]} ->
+          quote do: expr_result
+
+        {:&, _meta, [i]} = node when is_integer(i) ->
+          node
+
+        {:&, meta, _} ->
+          """
+          The `&` (capture) operator is not allowed in lambda-like version of \
+          `#{inspect(__MODULE__)}.~>/2`. Use `&1` alone instead.
+          """
+          |> raise_compile_error(__CALLER__, meta)
+
+        other ->
+          other
       end)
 
     quote do
@@ -313,5 +322,12 @@ defmodule Bunch do
       |> Enum.drop(1)
       |> Exception.format_stacktrace()
     end
+  end
+
+  defp raise_compile_error(reason, caller, meta) do
+    raise CompileError,
+      file: caller.file,
+      line: meta |> Keyword.get(:line, caller.line),
+      description: reason
   end
 end
