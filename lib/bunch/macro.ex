@@ -47,13 +47,13 @@ defmodule Bunch.Macro do
   end
 
   @doc """
-  Works like `Macro.prewalk/2`, but allows not to skip particular nodes.
+  Works like `Macro.prewalk/2`, but allows to skip particular nodes.
 
   ## Example
 
       iex> code = quote do fun(1, 2, opts: [key: :val]) end
       iex> code |> Bunch.Macro.prewalk_while(fn node ->
-      ...>   if(Keyword.keyword?(node)) do
+      ...>   if Keyword.keyword?(node) do
       ...>     {:skip, node ++ [default: 1]}
       ...>   else
       ...>     {:enter, node}

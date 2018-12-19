@@ -8,7 +8,7 @@ defmodule Bunch.Binary do
   @doc """
   Chunks given binary into parts of given size.
 
-  Remaining part is being cut off.
+  Remaining part is cut off.
 
   ## Examples
 
@@ -54,7 +54,7 @@ defmodule Bunch.Binary do
 
   @doc """
   Cuts off the smallest possible chunk from the end of `binary`, so that the
-  size of returned binary is an integer multiply of `i`.
+  size of returned binary is an integer multiple of `i`.
 
   ## Examples
 
