@@ -11,11 +11,49 @@ defmodule Bunch do
   defmacro __using__(_args) do
     quote do
       import unquote(__MODULE__),
-        only: [withl: 1, withl: 2, ~>: 2, ~>>: 2, provided: 2, int_part: 2]
+        only: [
+          withl: 1,
+          withl: 2,
+          ~>: 2,
+          ~>>: 2,
+          provided: 2,
+          int_part: 2,
+          quote_expr: 1,
+          quote_expr: 2
+        ]
     end
   end
 
   @compile {:inline, listify: 1, error_if_nil: 2, int_part: 2}
+
+  @doc """
+  Works like `quote/2`, but doesn't require a do/end block and options are passed
+  as the last argument.
+
+  Useful when quoting a single expression.
+
+  ## Examples
+
+      iex> use Bunch
+      iex> quote_expr(String.t())
+      quote do String.t() end
+      iex> quote_expr(unquote(x) + 2, unquote: false)
+      quote unquote: false do unquote(x) + 2 end
+
+  ## Nesting
+  Nesting calls to `quote` disables unquoting in the inner call, while placing
+  `quote_expr` in `quote` or another `quote_expr` does not:
+
+      iex> use Bunch
+      iex> quote do quote do unquote(:code) end end == quote do quote do :code end end
+      false
+      iex> quote do quote_expr(unquote(:code)) end == quote do quote_expr(:code) end
+      true
+
+  """
+  defmacro quote_expr(code, opts \\ []) do
+    {:quote, [], [opts, [do: code]]}
+  end
 
   @doc """
   A labeled version of the `with` macro.
