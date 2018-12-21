@@ -45,4 +45,41 @@ defmodule Bunch.Macro do
         other_node
     end
   end
+
+  @doc """
+  Works like `Macro.prewalk/2`, but allows to skip particular nodes.
+
+  ## Example
+
+      iex> code = quote do fun(1, 2, opts: [key: :val]) end
+      iex> code |> Bunch.Macro.prewalk_while(fn node ->
+      ...>   if Keyword.keyword?(node) do
+      ...>     {:skip, node ++ [default: 1]}
+      ...>   else
+      ...>     {:enter, node}
+      ...>   end
+      ...> end)
+      quote do fun(1, 2, opts: [key: :val], default: 1) end
+
+  """
+  @spec prewalk_while(Macro.t(), (Macro.t() -> {:enter | :skip, Macro.t()})) :: Macro.t()
+  def prewalk_while(ast, fun) do
+    {ast, nil} =
+      Macro.traverse(
+        ast,
+        nil,
+        fn node, nil ->
+          case fun.(node) do
+            {:enter, node} -> {node, nil}
+            {:skip, node} -> {nil, {:node, node}}
+          end
+        end,
+        fn
+          nil, {:node, node} -> {node, nil}
+          node, nil -> {node, nil}
+        end
+      )
+
+    ast
+  end
 end
