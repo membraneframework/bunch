@@ -82,4 +82,17 @@ defmodule Bunch.Macro do
 
     ast
   end
+
+  @doc """
+  Takes a code block, expands macros inside and pretty prints it.
+  """
+  defmacro peek_code(do: block) do
+    Macro.prewalk(block, fn tree -> Macro.expand(tree, __ENV__) end)
+    |> Macro.to_string()
+    |> IO.puts()
+
+    quote do
+      unquote(block)
+    end
+  end
 end
