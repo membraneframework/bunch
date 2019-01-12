@@ -84,10 +84,19 @@ defmodule Bunch.Macro do
   end
 
   @doc """
+  Receives an AST and traverses it expanding all the nodes.
+
+  This function uses `Macro.expand/2` under the hood. Check
+  it out for more information and examples.
+  """
+  def expand_deep(ast, env), do: Macro.prewalk(ast, fn tree -> Macro.expand(tree, env) end)
+
+  @doc """
   Takes a code block, expands macros inside and pretty prints it.
   """
   defmacro peek_code(do: block) do
-    Macro.prewalk(block, fn tree -> Macro.expand(tree, __ENV__) end)
+    block
+    |> expand_deep(__CALLER__)
     |> Macro.to_string()
     |> IO.puts()
 
