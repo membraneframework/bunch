@@ -90,18 +90,4 @@ defmodule Bunch.Macro do
   it out for more information and examples.
   """
   def expand_deep(ast, env), do: Macro.prewalk(ast, fn tree -> Macro.expand(tree, env) end)
-
-  @doc """
-  Takes a code block, expands macros inside and pretty prints it.
-  """
-  defmacro peek_code(do: block) do
-    block
-    |> expand_deep(__CALLER__)
-    |> Macro.to_string()
-    |> IO.puts()
-
-    quote do
-      unquote(block)
-    end
-  end
 end
