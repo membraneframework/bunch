@@ -58,14 +58,14 @@ defmodule Bunch.Retry do
     times = options |> Keyword.get(:times, :infinity)
     duration = options |> Keyword.get(:duration, :infinity)
     delay = options |> Keyword.get(:delay, 0)
-    fun |> do_retry(arbiter, times, duration, delay, 0, System.monotonic_time(:milliseconds))
+    fun |> do_retry(arbiter, times, duration, delay, 0, System.monotonic_time(:millisecond))
   end
 
   defp do_retry(fun, arbiter, times, duration, delay, retries, init_time) do
     ret = fun.()
 
     if not arbiter.(ret) and times > retries &&
-         duration > System.monotonic_time(:milliseconds) - init_time + delay do
+         duration > System.monotonic_time(:millisecond) - init_time + delay do
       :timer.sleep(delay)
       fun |> do_retry(arbiter, times, duration, delay, retries + 1, init_time)
     else

@@ -15,5 +15,5 @@ defmodule Bunch.Process do
   """
   @spec send_at(pos_integer, pid, any) :: reference
   def send_at(time, pid \\ self(), msg),
-    do: Process.send_after(pid, msg, time - System.system_time(:milliseconds))
+    do: Process.send_after(pid, msg, time - System.system_time(:millisecond))
 end
