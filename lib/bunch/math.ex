@@ -24,7 +24,7 @@ defmodule Bunch.Math do
   Useful when an accumulation of division error is not acceptable, for example
   when you need to produce chunks of data every second but need to make sure there
   are 9 chunks per 4 seconds on average. You can calculate `div_rem(9, 4)`,
-  keep the remainder, pass it to subsequent calls and every third result will be
+  keep the remainder, pass it to subsequent calls and every fourth result will be
   bigger than others.
 
   ## Example
@@ -39,9 +39,8 @@ defmodule Bunch.Math do
           divident :: non_neg_integer,
           divisor :: pos_integer,
           accumulated_remainder :: non_neg_integer
-        ) ::
-          {div :: non_neg_integer, rem :: non_neg_integer}
-  def div_rem(dividend, divisor, accumulated_remainder) when accumulated_remainder < divisor do
+        ) :: {div :: non_neg_integer, rem :: non_neg_integer}
+  def div_rem(dividend, divisor, accumulated_remainder) do
     div_rem(accumulated_remainder + dividend, divisor)
   end
 end
