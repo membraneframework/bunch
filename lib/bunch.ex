@@ -292,7 +292,7 @@ defmodule Bunch do
   defmacro expr ~>> mapper_clauses do
     default =
       quote do
-        _ -> unquote(expr)
+        default_result -> default_result
       end
 
     quote do

@@ -82,4 +82,12 @@ defmodule Bunch.Macro do
 
     ast
   end
+
+  @doc """
+  Receives an AST and traverses it expanding all the nodes.
+
+  This function uses `Macro.expand/2` under the hood. Check
+  it out for more information and examples.
+  """
+  def expand_deep(ast, env), do: Macro.prewalk(ast, fn tree -> Macro.expand(tree, env) end)
 end
