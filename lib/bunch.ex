@@ -353,10 +353,10 @@ defmodule Bunch do
   """
   defmacro stacktrace do
     quote do
-      use unquote(__MODULE__)
+      {:current_stacktrace, trace} = Process.info(self(), :current_stacktrace)
+
       # drop excludes `Process.info/2` call
-      Process.info(self(), :current_stacktrace)
-      ~> ({:current_stacktrace, trace} -> trace)
+      trace
       |> Enum.drop(1)
       |> Exception.format_stacktrace()
     end
