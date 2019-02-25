@@ -16,7 +16,6 @@ defmodule Bunch do
           withl: 2,
           ~>: 2,
           ~>>: 2,
-          provided: 2,
           int_part: 2,
           quote_expr: 1,
           quote_expr: 2
@@ -298,50 +297,6 @@ defmodule Bunch do
     quote do
       case unquote(expr) do
         unquote(mapper_clauses ++ default)
-      end
-    end
-  end
-
-  @doc """
-  Macro providing support for python-style condition notation.
-
-  ## Examples
-
-      iex> use #{inspect(__MODULE__)}
-      iex> x = 10
-      iex> x |> provided(that: x > 0, else: 0)
-      10
-      iex> x = -4
-      iex> x |> provided(that: x > 0, else: 0)
-      0
-
-
-  Apart from `that`, supported are also `do` and `not` keys:
-
-      iex> use #{inspect(__MODULE__)}
-      iex> x = -4
-      iex> x |> provided do x > 0 else 0 end
-      0
-      iex> x = -4
-      iex> x |> provided(not: x > 0, else: 0)
-      -4
-
-  """
-  defmacro provided(expr, that: condition, else: default),
-    do: do_provided(expr, condition, default)
-
-  defmacro provided(expr, do: condition, else: default),
-    do: do_provided(expr, condition, default)
-
-  defmacro provided(expr, not: condition, else: default),
-    do: do_provided(default, condition, expr)
-
-  defp do_provided(expr, condition, default) do
-    quote do
-      if unquote(condition) do
-        unquote(expr)
-      else
-        unquote(default)
       end
     end
   end
