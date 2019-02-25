@@ -1,4 +1,4 @@
-defmodule Bunch.TupleListTest do
+defmodule Bunch.KVListTest do
   use ExUnit.Case, async: true
 
   @module Bunch.KVList

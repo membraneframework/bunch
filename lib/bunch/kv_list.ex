@@ -7,7 +7,7 @@ defmodule Bunch.KVList do
   element of each tuple is a key, and the second is a value.
   """
 
-  @type kv_list_t(key, value) :: [{key, value}]
+  @type t(key, value) :: [{key, value}]
 
   @doc """
   Maps keys of `list` using function `f`.
@@ -18,7 +18,7 @@ defmodule Bunch.KVList do
       [{2, :a}, {3, :b}]
 
   """
-  @spec map_keys(kv_list_t(k1, v), (k1 -> k2)) :: kv_list_t(k2, v) when k1: any, k2: any, v: any
+  @spec map_keys(t(k1, v), (k1 -> k2)) :: t(k2, v) when k1: any, k2: any, v: any
   def map_keys(list, f) do
     list |> Enum.map(fn {key, value} -> {f.(key), value} end)
   end
@@ -32,7 +32,7 @@ defmodule Bunch.KVList do
       [a: 2, b: 3]
 
   """
-  @spec map_values(kv_list_t(k, v1), (v1 -> v2)) :: kv_list_t(k, v2) when k: any, v1: any, v2: any
+  @spec map_values(t(k, v1), (v1 -> v2)) :: t(k, v2) when k: any, v1: any, v2: any
   def map_values(list, f) do
     list |> Enum.map(fn {key, value} -> {key, f.(value)} end)
   end

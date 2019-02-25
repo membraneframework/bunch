@@ -168,7 +168,7 @@ defmodule Bunch do
       [nil]
 
   """
-  @spec listify(list) :: list when list: list
+  @spec listify(l) :: l when l: list
   @spec listify(a) :: [a] when a: any
   def listify(list) when is_list(list) do
     list
