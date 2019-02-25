@@ -1,7 +1,13 @@
-defmodule Bunch.TupleList do
+defmodule Bunch.KVList do
   @moduledoc """
-  A bunch of helper functions for manipulating lists of tuples (including keyword lists).
+  A bunch of helper functions for manipulating key-value lists (including keyword
+  lists).
+
+  Key-value lists are represented as lists of 2-element tuples, where the first
+  element of each tuple is a key, and the second is a value.
   """
+
+  @type kv_list_t(key, value) :: [{key, value}]
 
   @doc """
   Maps keys of `list` using function `f`.
@@ -12,7 +18,7 @@ defmodule Bunch.TupleList do
       [{2, :a}, {3, :b}]
 
   """
-  @spec map_keys([{k1, v}], (k1 -> k2)) :: [{k2, v}] when k1: any, k2: any, v: any
+  @spec map_keys(kv_list_t(k1, v), (k1 -> k2)) :: kv_list_t(k2, v) when k1: any, k2: any, v: any
   def map_keys(list, f) do
     list |> Enum.map(fn {key, value} -> {f.(key), value} end)
   end
@@ -26,7 +32,7 @@ defmodule Bunch.TupleList do
       [a: 2, b: 3]
 
   """
-  @spec map_values([{k, v1}], (v1 -> v2)) :: [{k, v2}] when k: any, v1: any, v2: any
+  @spec map_values(kv_list_t(k, v1), (v1 -> v2)) :: kv_list_t(k, v2) when k: any, v1: any, v2: any
   def map_values(list, f) do
     list |> Enum.map(fn {key, value} -> {key, f.(value)} end)
   end
