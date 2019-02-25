@@ -49,15 +49,34 @@ defmodule Bunch.Math do
 
   ## Examples
 
-      iex> #{inspect(__MODULE__)}.int_part(10, 4)
+      iex> #{inspect(__MODULE__)}.max_multiple_lt(4, 10)
       8
-      iex> #{inspect(__MODULE__)}.int_part(7, 7)
-      7
+      iex> #{inspect(__MODULE__)}.max_multiple_lt(2, 6)
+      6
 
   """
-  @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
-  def int_part(value, divisor) do
-    remainder = value |> rem(divisor)
-    value - remainder
+  @spec max_multiple_lt(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def max_multiple_lt(value, threshold) do
+    remainder = threshold |> rem(value)
+    threshold - remainder
+  end
+
+  @doc """
+  Returns `value` decreased by `value (mod divisor)`
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.min_multiple_gt(4, 10)
+      12
+      iex> #{inspect(__MODULE__)}.min_multiple_gt(2, 6)
+      6
+
+  """
+  @spec min_multiple_gt(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def min_multiple_gt(value, threshold) do
+    case threshold |> rem(value) do
+      0 -> threshold
+      remainder -> threshold + value - remainder
+    end
   end
 end
