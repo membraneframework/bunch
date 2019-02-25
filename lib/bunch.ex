@@ -16,14 +16,13 @@ defmodule Bunch do
           withl: 2,
           ~>: 2,
           ~>>: 2,
-          int_part: 2,
           quote_expr: 1,
           quote_expr: 2
         ]
     end
   end
 
-  @compile {:inline, listify: 1, error_if_nil: 2, int_part: 2}
+  @compile {:inline, listify: 1, error_if_nil: 2}
 
   @doc """
   Works like `quote/2`, but doesn't require a do/end block and options are passed
@@ -191,23 +190,6 @@ defmodule Bunch do
   def stateful_try_with_status({:ok, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:ok, _res}, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:error, reason}, _state} = res), do: {{:error, reason}, res}
-
-  @doc """
-  Returns `value` decreased by `value (mod divisor)`
-
-  ## Examples
-
-      iex> #{inspect(__MODULE__)}.int_part(10, 4)
-      8
-      iex> #{inspect(__MODULE__)}.int_part(7, 7)
-      7
-
-  """
-  @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
-  def int_part(value, divisor) do
-    remainder = value |> rem(divisor)
-    value - remainder
-  end
 
   @doc """
   Helper for writing pipeline-like syntax. Maps given value using match clauses

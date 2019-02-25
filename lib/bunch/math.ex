@@ -43,4 +43,21 @@ defmodule Bunch.Math do
   def div_rem(dividend, divisor, accumulated_remainder) do
     div_rem(accumulated_remainder + dividend, divisor)
   end
+
+  @doc """
+  Returns `value` decreased by `value (mod divisor)`
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.int_part(10, 4)
+      8
+      iex> #{inspect(__MODULE__)}.int_part(7, 7)
+      7
+
+  """
+  @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
+  def int_part(value, divisor) do
+    remainder = value |> rem(divisor)
+    value - remainder
+  end
 end
