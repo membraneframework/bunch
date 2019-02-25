@@ -42,6 +42,16 @@ defmodule Bunch.Access do
 
   @doc """
   #{@gen_common_docs.("get_in/2")}
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.get_in(%{a: %{b: 10}}, [:a, :b])
+      10
+      iex> #{inspect(__MODULE__)}.get_in(%{a: 10}, :a)
+      10
+      iex> #{inspect(__MODULE__)}.get_in(%{a: %{b: 10}}, [])
+      %{a: %{b: 10}}
+
   """
   @spec get_in(Access.t(), Access.key() | [Access.key()]) :: Access.value()
   def get_in(container, []), do: container
@@ -49,6 +59,16 @@ defmodule Bunch.Access do
 
   @doc """
   #{@gen_common_docs.("put_in/3")}
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.put_in(%{a: %{b: 10}}, [:a, :b], 20)
+      %{a: %{b: 20}}
+      iex> #{inspect(__MODULE__)}.put_in(%{a: 10}, :a, 20)
+      %{a: 20}
+      iex> #{inspect(__MODULE__)}.put_in(%{a: %{b: 10}}, [], 20)
+      20
+
   """
   @spec put_in(Access.t(), Access.key() | [Access.key()], Access.value()) :: Access.value()
   def put_in(_map, [], v), do: v
@@ -56,6 +76,16 @@ defmodule Bunch.Access do
 
   @doc """
   #{@gen_common_docs.("update_in/3")}
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.update_in(%{a: %{b: 10}}, [:a, :b], & &1 * 2)
+      %{a: %{b: 20}}
+      iex> #{inspect(__MODULE__)}.update_in(%{a: 10}, :a, & &1 * 2)
+      %{a: 20}
+      iex> #{inspect(__MODULE__)}.update_in(10, [], & &1 * 2)
+      20
+
   """
   @spec update_in(Access.t(), Access.key() | [Access.key()], (Access.value() -> Access.value())) ::
           Access.t()
@@ -64,6 +94,16 @@ defmodule Bunch.Access do
 
   @doc """
   #{@gen_common_docs.("get_and_update_in/3")}
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.get_and_update_in(%{a: %{b: 10}}, [:a, :b], & {&1, &1 * 2})
+      {10, %{a: %{b: 20}}}
+      iex> #{inspect(__MODULE__)}.get_and_update_in(%{a: 10}, :a, & {&1, &1 * 2})
+      {10, %{a: 20}}
+      iex> #{inspect(__MODULE__)}.get_and_update_in(10, [], & {&1, &1 * 2})
+      {10, 20}
+
   """
   @spec get_and_update_in(Access.t(), Access.key() | [Access.key()], (a -> {b, a})) ::
           {b, Access.t()}
@@ -75,13 +115,33 @@ defmodule Bunch.Access do
 
   @doc """
   #{@gen_common_docs.("pop_in/2")}
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.pop_in(%{a: %{b: 10}}, [:a, :b])
+      {10, %{a: %{}}}
+      iex> #{inspect(__MODULE__)}.pop_in(%{a: 10}, :a)
+      {10, %{}}
+      iex> #{inspect(__MODULE__)}.pop_in(10, [])
+      {10, nil}
+
   """
   @spec pop_in(Access.t(), Access.key() | [Access.key()]) :: {Access.value(), Access.t()}
-  def pop_in(container, []), do: {nil, container}
+  def pop_in(container, []), do: {container, nil}
   def pop_in(container, keys), do: container |> Kernel.pop_in(keys |> map_keys)
 
   @doc """
   Works like `pop_in/2`, but discards returned value.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.delete_in(%{a: %{b: 10}}, [:a, :b])
+      %{a: %{}}
+      iex> #{inspect(__MODULE__)}.delete_in(%{a: 10}, :a)
+      %{}
+      iex> #{inspect(__MODULE__)}.delete_in(10, [])
+      nil
+
   """
   @spec delete_in(Access.t(), Access.key() | [Access.key()]) :: Access.t()
   def delete_in(container, keys), do: pop_in(container, keys) ~> ({_out, container} -> container)
