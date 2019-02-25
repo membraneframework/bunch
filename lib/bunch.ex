@@ -155,15 +155,21 @@ defmodule Bunch do
   Embeds the argument in a one-element list if it is not a list itself. Otherwise
   works as identity.
 
+  Works similarly to `List.wrap/1`, but treats `nil` as any non-list value,
+  instead of returning empty list in this case.
+
   ## Examples
 
       iex> #{inspect(__MODULE__)}.listify(:a)
       [:a]
       iex> #{inspect(__MODULE__)}.listify([:a, :b, :c])
       [:a, :b, :c]
+      iex> #{inspect(__MODULE__)}.listify(nil)
+      [nil]
 
   """
-  @spec listify(a | [a]) :: [a] when a: any
+  @spec listify(list) :: list when list: list
+  @spec listify(a) :: [a] when a: any
   def listify(list) when is_list(list) do
     list
   end
