@@ -301,22 +301,6 @@ defmodule Bunch do
     end
   end
 
-  @doc """
-  Returns stacktrace as a string.
-
-  The stacktrace is formatted to the readable format.
-  """
-  defmacro stacktrace do
-    quote do
-      {:current_stacktrace, trace} = Process.info(self(), :current_stacktrace)
-
-      # drop excludes `Process.info/2` call
-      trace
-      |> Enum.drop(1)
-      |> Exception.format_stacktrace()
-    end
-  end
-
   defp raise_compile_error(reason, caller, meta) do
     raise CompileError,
       file: caller.file,
