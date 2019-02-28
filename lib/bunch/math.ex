@@ -45,35 +45,35 @@ defmodule Bunch.Math do
   end
 
   @doc """
-  Returns `value` decreased by `value (mod divisor)`
+  Returns the biggest multiple of `value` that is lower than or equal to `threshold`.
 
   ## Examples
 
-      iex> #{inspect(__MODULE__)}.max_multiple_lt(4, 10)
+      iex> #{inspect(__MODULE__)}.max_multiple_lte(4, 10)
       8
-      iex> #{inspect(__MODULE__)}.max_multiple_lt(2, 6)
+      iex> #{inspect(__MODULE__)}.max_multiple_lte(2, 6)
       6
 
   """
-  @spec max_multiple_lt(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
-  def max_multiple_lt(value, threshold) do
+  @spec max_multiple_lte(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def max_multiple_lte(value, threshold) do
     remainder = threshold |> rem(value)
     threshold - remainder
   end
 
   @doc """
-  Returns `value` decreased by `value (mod divisor)`
+  Returns the smallest multiple of `value` that is greater than or equal to `threshold`.
 
   ## Examples
 
-      iex> #{inspect(__MODULE__)}.min_multiple_gt(4, 10)
+      iex> #{inspect(__MODULE__)}.min_multiple_gte(4, 10)
       12
-      iex> #{inspect(__MODULE__)}.min_multiple_gt(2, 6)
+      iex> #{inspect(__MODULE__)}.min_multiple_gte(2, 6)
       6
 
   """
-  @spec min_multiple_gt(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
-  def min_multiple_gt(value, threshold) do
+  @spec min_multiple_gte(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def min_multiple_gte(value, threshold) do
     case threshold |> rem(value) do
       0 -> threshold
       remainder -> threshold + value - remainder

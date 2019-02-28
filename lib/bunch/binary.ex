@@ -86,7 +86,7 @@ defmodule Bunch.Binary do
   """
   @spec split_int_part(binary, pos_integer) :: {binary, binary}
   def split_int_part(binary, i) do
-    len = Bunch.Math.max_multiple_lt(i, binary |> byte_size())
+    len = Bunch.Math.max_multiple_lte(i, binary |> byte_size())
     <<b::binary-size(len), r::binary>> = binary
     {b, r}
   end
