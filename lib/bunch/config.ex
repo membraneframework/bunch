@@ -59,7 +59,7 @@ defmodule Bunch.Config do
         ) :: Type.try_t(config_map)
         when config_map: %{atom => v}, v: any
   def parse(config, fields_specs) do
-    fields_specs = fields_specs |> Bunch.TupleList.map_values(&Map.new/1)
+    fields_specs = fields_specs |> Bunch.KVList.map_values(&Map.new/1)
 
     withl kw: true <- config |> Keyword.keyword?(),
           dup: [] <- config |> Keyword.keys() |> Bunch.Enum.duplicates(),

@@ -43,4 +43,40 @@ defmodule Bunch.Math do
   def div_rem(dividend, divisor, accumulated_remainder) do
     div_rem(accumulated_remainder + dividend, divisor)
   end
+
+  @doc """
+  Returns the biggest multiple of `value` that is lower than or equal to `threshold`.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.max_multiple_lte(4, 10)
+      8
+      iex> #{inspect(__MODULE__)}.max_multiple_lte(2, 6)
+      6
+
+  """
+  @spec max_multiple_lte(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def max_multiple_lte(value, threshold) do
+    remainder = threshold |> rem(value)
+    threshold - remainder
+  end
+
+  @doc """
+  Returns the smallest multiple of `value` that is greater than or equal to `threshold`.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.min_multiple_gte(4, 10)
+      12
+      iex> #{inspect(__MODULE__)}.min_multiple_gte(2, 6)
+      6
+
+  """
+  @spec min_multiple_gte(value :: pos_integer, threshold :: non_neg_integer) :: non_neg_integer
+  def min_multiple_gte(value, threshold) do
+    case threshold |> rem(value) do
+      0 -> threshold
+      remainder -> threshold + value - remainder
+    end
+  end
 end

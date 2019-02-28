@@ -16,15 +16,13 @@ defmodule Bunch do
           withl: 2,
           ~>: 2,
           ~>>: 2,
-          provided: 2,
-          int_part: 2,
           quote_expr: 1,
           quote_expr: 2
         ]
     end
   end
 
-  @compile {:inline, listify: 1, error_if_nil: 2, int_part: 2}
+  @compile {:inline, listify: 1, error_if_nil: 2}
 
   @doc """
   Works like `quote/2`, but doesn't require a do/end block and options are passed
@@ -157,15 +155,21 @@ defmodule Bunch do
   Embeds the argument in a one-element list if it is not a list itself. Otherwise
   works as identity.
 
+  Works similarly to `List.wrap/1`, but treats `nil` as any non-list value,
+  instead of returning empty list in this case.
+
   ## Examples
 
       iex> #{inspect(__MODULE__)}.listify(:a)
       [:a]
       iex> #{inspect(__MODULE__)}.listify([:a, :b, :c])
       [:a, :b, :c]
+      iex> #{inspect(__MODULE__)}.listify(nil)
+      [nil]
 
   """
-  @spec listify(a | [a]) :: [a] when a: any
+  @spec listify(l) :: l when l: list
+  @spec listify(a) :: [a] when a: any
   def listify(list) when is_list(list) do
     list
   end
@@ -192,23 +196,6 @@ defmodule Bunch do
   def stateful_try_with_status({:ok, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:ok, _res}, _state} = res), do: {:ok, res}
   def stateful_try_with_status({{:error, reason}, _state} = res), do: {{:error, reason}, res}
-
-  @doc """
-  Returns `value` decreased by `value (mod divisor)`
-
-  ## Examples
-
-      iex> #{inspect(__MODULE__)}.int_part(10, 4)
-      8
-      iex> #{inspect(__MODULE__)}.int_part(7, 7)
-      7
-
-  """
-  @spec int_part(value :: non_neg_integer, divisor :: pos_integer) :: non_neg_integer
-  def int_part(value, divisor) do
-    remainder = value |> rem(divisor)
-    value - remainder
-  end
 
   @doc """
   Helper for writing pipeline-like syntax. Maps given value using match clauses
@@ -250,25 +237,33 @@ defmodule Bunch do
 
   # Case when the mapper is a piece of lambda-like code
   defmacro expr ~> mapper do
-    mapped =
+    {mapped, arg_present?} =
       mapper
-      |> Macro.prewalk(fn
-        {:&, _meta, [1]} ->
-          quote do: expr_result
+      |> Macro.prewalk(false, fn
+        {:&, _meta, [1]}, _acc ->
+          quote do: {expr_result, true}
 
-        {:&, _meta, [i]} = node when is_integer(i) ->
-          node
+        {:&, _meta, [i]} = node, acc when is_integer(i) ->
+          {node, acc}
 
-        {:&, meta, _} ->
+        {:&, meta, _}, _acc ->
           """
           The `&` (capture) operator is not allowed in lambda-like version of \
           `#{inspect(__MODULE__)}.~>/2`. Use `&1` alone instead.
           """
           |> raise_compile_error(__CALLER__, meta)
 
-        other ->
-          other
+        other, acc ->
+          {other, acc}
       end)
+
+    if not arg_present? do
+      """
+      `#{inspect(__MODULE__)}.~>/2` operator requires either match clauses or \
+      at least one occurence of `&1` argument on the right hand side.
+      """
+      |> raise_compile_error(__CALLER__)
+    end
 
     quote do
       expr_result = unquote(expr)
@@ -289,7 +284,7 @@ defmodule Bunch do
       :error
 
   """
-  defmacro expr ~>> mapper_clauses do
+  defmacro expr ~>> ([{:->, _, _} | _] = mapper_clauses) do
     default =
       quote do
         default_result -> default_result
@@ -302,67 +297,15 @@ defmodule Bunch do
     end
   end
 
-  @doc """
-  Macro providing support for python-style condition notation.
-
-  ## Examples
-
-      iex> use #{inspect(__MODULE__)}
-      iex> x = 10
-      iex> x |> provided(that: x > 0, else: 0)
-      10
-      iex> x = -4
-      iex> x |> provided(that: x > 0, else: 0)
-      0
-
-
-  Apart from `that`, supported are also `do` and `not` keys:
-
-      iex> use #{inspect(__MODULE__)}
-      iex> x = -4
-      iex> x |> provided do x > 0 else 0 end
-      0
-      iex> x = -4
-      iex> x |> provided(not: x > 0, else: 0)
-      -4
-
-  """
-  defmacro provided(expr, that: condition, else: default),
-    do: do_provided(expr, condition, default)
-
-  defmacro provided(expr, do: condition, else: default),
-    do: do_provided(expr, condition, default)
-
-  defmacro provided(expr, not: condition, else: default),
-    do: do_provided(default, condition, expr)
-
-  defp do_provided(expr, condition, default) do
-    quote do
-      if unquote(condition) do
-        unquote(expr)
-      else
-        unquote(default)
-      end
-    end
+  defmacro _expr ~>> _ do
+    """
+    `#{inspect(__MODULE__)}.~>>/2` operator expects match clauses on the right \
+    hand side.
+    """
+    |> raise_compile_error(__CALLER__)
   end
 
-  @doc """
-  Returns stacktrace as a string.
-
-  The stacktrace is formatted to the readable format.
-  """
-  defmacro stacktrace do
-    quote do
-      {:current_stacktrace, trace} = Process.info(self(), :current_stacktrace)
-
-      # drop excludes `Process.info/2` call
-      trace
-      |> Enum.drop(1)
-      |> Exception.format_stacktrace()
-    end
-  end
-
-  defp raise_compile_error(reason, caller, meta) do
+  defp raise_compile_error(reason, caller, meta \\ []) do
     raise CompileError,
       file: caller.file,
       line: meta |> Keyword.get(:line, caller.line),
