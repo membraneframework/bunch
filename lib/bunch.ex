@@ -237,25 +237,33 @@ defmodule Bunch do
 
   # Case when the mapper is a piece of lambda-like code
   defmacro expr ~> mapper do
-    mapped =
+    {mapped, arg_present?} =
       mapper
-      |> Macro.prewalk(fn
-        {:&, _meta, [1]} ->
-          quote do: expr_result
+      |> Macro.prewalk(false, fn
+        {:&, _meta, [1]}, _acc ->
+          quote do: {expr_result, true}
 
-        {:&, _meta, [i]} = node when is_integer(i) ->
-          node
+        {:&, _meta, [i]} = node, acc when is_integer(i) ->
+          {node, acc}
 
-        {:&, meta, _} ->
+        {:&, meta, _}, _acc ->
           """
           The `&` (capture) operator is not allowed in lambda-like version of \
           `#{inspect(__MODULE__)}.~>/2`. Use `&1` alone instead.
           """
           |> raise_compile_error(__CALLER__, meta)
 
-        other ->
-          other
+        other, acc ->
+          {other, acc}
       end)
+
+    if not arg_present? do
+      """
+      `#{inspect(__MODULE__)}.~>/2` operator requires either match clauses or \
+      at least one occurence of `&1` argument on the right hand side.
+      """
+      |> raise_compile_error(__CALLER__)
+    end
 
     quote do
       expr_result = unquote(expr)
@@ -276,7 +284,7 @@ defmodule Bunch do
       :error
 
   """
-  defmacro expr ~>> mapper_clauses do
+  defmacro expr ~>> ([{:->, _, _} | _] = mapper_clauses) do
     default =
       quote do
         default_result -> default_result
@@ -289,7 +297,15 @@ defmodule Bunch do
     end
   end
 
-  defp raise_compile_error(reason, caller, meta) do
+  defmacro _expr ~>> _ do
+    """
+    `#{inspect(__MODULE__)}.~>>/2` operator expects match clauses on the right \
+    hand side.
+    """
+    |> raise_compile_error(__CALLER__)
+  end
+
+  defp raise_compile_error(reason, caller, meta \\ []) do
     raise CompileError,
       file: caller.file,
       line: meta |> Keyword.get(:line, caller.line),
