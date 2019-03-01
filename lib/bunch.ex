@@ -6,7 +6,7 @@ defmodule Bunch do
   alias __MODULE__.Type
 
   @doc """
-  Brings some useful functions to the scope.
+  Imports a bunch of Bunch macros: `withl/1`, `withl/2`, `~>/2`, `~>>/2`, `quote_expr/1`, `quote_expr/2`
   """
   defmacro __using__(_args) do
     quote do
@@ -179,7 +179,16 @@ defmodule Bunch do
   end
 
   @doc """
-  Returns error tuple if given value is nil and ok tuple otherwise.
+  Returns an `:error` tuple if given value is `nil` and `:ok` tuple otherwise.
+
+  ## Examples
+
+      iex> map = %{:answer => 42}
+      iex> #{inspect(__MODULE__)}.error_if_nil(map[:answer], :reason)
+      {:ok, 42}
+      iex> #{inspect(__MODULE__)}.error_if_nil(map[:invalid], :reason)
+      {:error, :reason}
+
   """
   @spec error_if_nil(value, reason) :: Type.try_t(value)
         when value: any(), reason: any()
