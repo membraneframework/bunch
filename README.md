@@ -11,7 +11,7 @@ API documentation is available at [HexDocs](https://hexdocs.pm/bunch/)
 Add the following line to your `deps` in `mix.exs`.  Run `mix deps.get`.
 
 ```elixir
-{:bunch, "~> 1.0"}
+{:bunch, "~> 1.1"}
 ```
 
 ## Copyright and License
