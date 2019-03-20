@@ -4,7 +4,7 @@ defmodule Bunch.Markdown do
   """
 
   @doc """
-  Indents whole block of text by one level (two spaces).
+  Indents whole block of text by specified number of spaces
 
   ## Examples
 
@@ -22,7 +22,7 @@ defmodule Bunch.Markdown do
         Second line
         Third line
       \"""
-      iex>#{inspect(__MODULE__)}.indent(text, 2)
+      iex>#{inspect(__MODULE__)}.indent(text, 4)
       \"""
           First line
           Second line
@@ -31,13 +31,12 @@ defmodule Bunch.Markdown do
   """
 
   @spec indent(String.t(), non_neg_integer()) :: String.t()
-  def indent(string, level \\ 1) do
-    # replace each line with indented one, `\0` is a whole match
-    string |> String.replace(~r/^.*$/m, indent_line("\\0", level))
+  def indent(string, level \\ 2) do
+    do_indent(string, level)
   end
 
   @doc """
-  Indents the whole block of text by one level using hard spaces (`&nbsp;`).
+  Indents the whole block of text by specified numer of hard spaces (`&nbsp;`).
 
   ## Examples
 
@@ -55,20 +54,24 @@ defmodule Bunch.Markdown do
       &nbsp;&nbsp;Second line
       &nbsp;&nbsp;Third line
       \"""
-      iex>#{inspect(__MODULE__)}.hard_indent(text, 2)
+      iex>#{inspect(__MODULE__)}.hard_indent(text, 1)
       \"""
-      &nbsp;&nbsp;&nbsp;&nbsp;First line
-      &nbsp;&nbsp;&nbsp;&nbsp;Second line
-      &nbsp;&nbsp;&nbsp;&nbsp;Third line
+      &nbsp;First line
+      &nbsp;Second line
+      &nbsp;Third line
       \"""
   """
   @spec hard_indent(String.t(), non_neg_integer()) :: String.t()
-  def hard_indent(string, level \\ 1) do
-    # replace each line with indented one, `\0` is a whole match
-    string |> String.replace(~r/^.*$/m, indent_line("\\0", level, "&nbsp;"))
+  def hard_indent(string, level \\ 2) do
+    do_indent(string, level, "&nbsp;")
   end
 
-  defp indent_line(string, level, character \\ " ") do
-    String.duplicate(character, level * 2) <> string
+  defp do_indent(string, size, character \\ " ") do
+    indent = String.duplicate(character, size)
+
+    string
+    |> String.replace("\n", "\n" <> indent)
+    |> String.replace_suffix(indent, "")
+    |> String.replace_prefix("", indent)
   end
 end
