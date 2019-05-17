@@ -114,6 +114,23 @@ defmodule Bunch.Access do
     do: container |> Kernel.get_and_update_in(keys |> map_keys, f)
 
   @doc """
+  Updates value at `keys` in a nested data structure and returns new value and updated structure.
+
+  Uses `get_and_update_in/3` under the hood.
+
+  ## Example
+
+      iex> %{a: %{b: 10}} |> #{inspect(__MODULE__)}.get_updated_in([:a, :b], & &1+1)
+      {11, %{a: %{b: 11}}}
+
+  """
+  @spec get_updated_in(Access.t(), Access.key() | [Access.key()], (Access.value() -> a)) ::
+          {a, Access.t()}
+        when a: Access.value()
+  def get_updated_in(container, keys, f),
+    do: container |> get_and_update_in(keys, fn a -> f.(a) ~> {&1, &1} end)
+
+  @doc """
   #{@gen_common_docs.("pop_in/2")}
 
   ## Examples
