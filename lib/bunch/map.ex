@@ -11,28 +11,28 @@ defmodule Bunch.Map do
 
   ## Example
 
-      iex> %{a: 1} |> #{inspect(__MODULE__)}.update_and_get(:a, & &1+1)
+      iex> %{a: 1} |> #{inspect(__MODULE__)}.get_updated(:a, & &1+1)
       {2, %{a: 2}}
 
   """
-  @spec update_and_get(map, Map.key(), (Map.value() -> v)) :: {v, map} when v: Map.value()
-  def update_and_get(map, key, fun) do
+  @spec get_updated(map, Map.key(), (Map.value() -> v)) :: {v, map} when v: Map.value()
+  def get_updated(map, key, fun) do
     Map.get_and_update(map, key, fn a -> fun.(a) ~> {&1, &1} end)
   end
 
   @doc """
-  Works like `update_and_get/3, but requires `map` to contain `key`.
+  Works like `get_updated/3`, but requires `map` to contain `key`.
 
   Uses `Map.get_and_update!/3` under the hood.
 
   ## Example
 
-      iex> %{a: 1} |> #{inspect(__MODULE__)}.update_and_get!(:a, & &1+1)
+      iex> %{a: 1} |> #{inspect(__MODULE__)}.get_updated!(:a, & &1+1)
       {2, %{a: 2}}
 
   """
-  @spec update_and_get!(map, Map.key(), (Map.value() -> v)) :: {v, map} when v: Map.value()
-  def update_and_get!(map, key, fun) do
+  @spec get_updated!(map, Map.key(), (Map.value() -> v)) :: {v, map} when v: Map.value()
+  def get_updated!(map, key, fun) do
     Map.get_and_update!(map, key, fn a -> fun.(a) ~> {&1, &1} end)
   end
 

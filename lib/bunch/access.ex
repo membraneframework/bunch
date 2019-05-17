@@ -120,14 +120,14 @@ defmodule Bunch.Access do
 
   ## Example
 
-      iex> %{a: %{b: 10}} |> #{inspect(__MODULE__)}.update_and_get_in([:a, :b], & &1+1)
+      iex> %{a: %{b: 10}} |> #{inspect(__MODULE__)}.get_updated_in([:a, :b], & &1+1)
       {11, %{a: %{b: 11}}}
 
   """
-  @spec update_and_get_in(Access.t(), Access.key() | [Access.key()], (Access.value() -> a)) ::
+  @spec get_updated_in(Access.t(), Access.key() | [Access.key()], (Access.value() -> a)) ::
           {a, Access.t()}
         when a: Access.value()
-  def update_and_get_in(container, keys, f),
+  def get_updated_in(container, keys, f),
     do: container |> get_and_update_in(keys, fn a -> f.(a) ~> {&1, &1} end)
 
   @doc """
