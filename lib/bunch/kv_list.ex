@@ -66,7 +66,7 @@ defmodule Bunch.KVList do
   end
 
   @doc """
-  Executes `f` with each key from list.
+  Executes `f` for each key in `list`.
 
   ## Example
 
@@ -81,7 +81,7 @@ defmodule Bunch.KVList do
   end
 
   @doc """
-  Executes `f` with each value from list.
+  Executes `f` for each value in `list`.
 
   ## Example
 
@@ -96,7 +96,7 @@ defmodule Bunch.KVList do
   end
 
   @doc """
-  Returns `true` if `f` returns truthy value for any key from list, otherwise `false`.
+  Returns `true` if `f` returns truthy value for any key from `list`, otherwise `false`.
 
   ## Example
 
@@ -112,7 +112,7 @@ defmodule Bunch.KVList do
   end
 
   @doc """
-  Returns `true` if `f` returns truthy value for any value from list, otherwise `false`.
+  Returns `true` if `f` returns truthy value for any value from `list`, otherwise `false`.
 
   ## Example
 
