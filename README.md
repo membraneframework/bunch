@@ -1,6 +1,8 @@
 # Bunch
 
-[![Build Status](https://travis-ci.com/membraneframework/bunch.svg?branch=master)](https://travis-ci.com/membraneframework/bunch)
+[![Hex.pm](https://img.shields.io/hexpm/v/bunch.svg)](https://hex.pm/packages/bunch)
+[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/bunch/)
+[![CircleCI](https://circleci.com/gh/membraneframework/bunch.svg?style=svg)](https://circleci.com/gh/membraneframework/bunch)
 
 Bunch is a bunch of helper functions, intended to make life easier.
 
