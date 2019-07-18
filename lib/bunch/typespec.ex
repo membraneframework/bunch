@@ -2,6 +2,7 @@ defmodule Bunch.Typespec do
   @moduledoc """
   A bunch of typespec-related helpers.
   """
+
   defmacro __using__(_args) do
     quote do
       import Kernel, except: [@: 1]
