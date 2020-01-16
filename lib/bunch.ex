@@ -25,6 +25,18 @@ defmodule Bunch do
   @compile {:inline, listify: 1, error_if_nil: 2}
 
   @doc """
+  Extracts the key from a key-value tuple.
+  """
+  @spec key({key, value}) :: key when key: any, value: any
+  def key({key, _value}), do: key
+
+  @doc """
+  Extracts the value from a key-value tuple.
+  """
+  @spec value({key, value}) :: value when key: any, value: any
+  def value({_key, value}), do: value
+
+  @doc """
   Works like `quote/2`, but doesn't require a do/end block and options are passed
   as the last argument.
 

@@ -10,6 +10,42 @@ defmodule Bunch.KVEnum do
   @type t(_key, _value) :: Enumerable.t()
 
   @doc """
+  Returns all keys from the `enum`.
+
+  Duplicated keys appear duplicated in the final enum of keys.
+
+  ## Examples
+
+      iex> Keyword.keys(a: 1, b: 2)
+      [:a, :b]
+      iex> Keyword.keys(a: 1, b: 2, a: 3)
+      [:a, :b, :a]
+
+  """
+  @spec keys(t(key, value)) :: [key] when key: any, value: any
+  def keys(enum) do
+    Enum.map(enum, &Bunch.key/1)
+  end
+
+  @doc """
+  Returns all values from the `enum`.
+
+  Values from duplicated keys will be kept in the final enum of values.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.values(a: 1, b: 2)
+      [1, 2]
+      iex> #{inspect(__MODULE__)}.values(a: 1, b: 2, a: 3)
+      [1, 2, 3]
+
+  """
+  @spec values(t(key, value)) :: [value] when key: any, value: any
+  def values(enum) do
+    Enum.map(enum, &Bunch.value/1)
+  end
+
+  @doc """
   Maps keys of `enum` using function `f`.
 
   ## Example
