@@ -1,7 +1,7 @@
-defmodule Bunch.KVListTest do
+defmodule Bunch.KVEnumTest do
   use ExUnit.Case, async: true
 
-  @module Bunch.KVList
+  @module Bunch.KVEnum
 
   doctest @module
 end
