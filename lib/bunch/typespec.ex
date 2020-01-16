@@ -26,7 +26,7 @@ defmodule Bunch.Typespec do
       :b
 
   """
-  defmacro @{:list_type, _, [{:::, _, [{name, _, _} = name_var, list]}]} do
+  defmacro @{:list_type, _, [{:"::", _, [{name, _, _} = name_var, list]}]} do
     type = list |> Enum.reduce(fn a, b -> {:|, [], [a, b]} end)
 
     quote do
