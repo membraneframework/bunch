@@ -16,9 +16,9 @@ defmodule Bunch.KVEnum do
 
   ## Examples
 
-      iex> Keyword.keys(a: 1, b: 2)
+      iex> #{inspect(__MODULE__)}.keys(a: 1, b: 2)
       [:a, :b]
-      iex> Keyword.keys(a: 1, b: 2, a: 3)
+      iex> #{inspect(__MODULE__)}.keys(a: 1, b: 2, a: 3)
       [:a, :b, :a]
 
   """
