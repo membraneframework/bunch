@@ -1,17 +1,52 @@
-defmodule Bunch.KVList do
-  @deprecated "Use `Bunch.KVEnum` instead"
+defmodule Bunch.KVEnum do
   @moduledoc """
-  A bunch of helper functions for manipulating key-value lists (including keyword
-  lists).
+  A bunch of helper functions for manipulating key-value enums (including keyword
+  enums).
 
-  Key-value lists are represented as lists of 2-element tuples, where the first
+  Key-value enums are represented as enums of 2-element tuples, where the first
   element of each tuple is a key, and the second is a value.
   """
 
-  @type t(key, value) :: [{key, value}]
+  @type t(_key, _value) :: Enumerable.t()
 
   @doc """
-  Maps keys of `list` using function `f`.
+  Returns all keys from the `enum`.
+
+  Duplicated keys appear duplicated in the final enum of keys.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.keys(a: 1, b: 2)
+      [:a, :b]
+      iex> #{inspect(__MODULE__)}.keys(a: 1, b: 2, a: 3)
+      [:a, :b, :a]
+
+  """
+  @spec keys(t(key, value)) :: [key] when key: any, value: any
+  def keys(enum) do
+    Enum.map(enum, &Bunch.key/1)
+  end
+
+  @doc """
+  Returns all values from the `enum`.
+
+  Values from duplicated keys will be kept in the final enum of values.
+
+  ## Examples
+
+      iex> #{inspect(__MODULE__)}.values(a: 1, b: 2)
+      [1, 2]
+      iex> #{inspect(__MODULE__)}.values(a: 1, b: 2, a: 3)
+      [1, 2, 3]
+
+  """
+  @spec values(t(key, value)) :: [value] when key: any, value: any
+  def values(enum) do
+    Enum.map(enum, &Bunch.value/1)
+  end
+
+  @doc """
+  Maps keys of `enum` using function `f`.
 
   ## Example
 
@@ -20,12 +55,12 @@ defmodule Bunch.KVList do
 
   """
   @spec map_keys(t(k1, v), (k1 -> k2)) :: t(k2, v) when k1: any, k2: any, v: any
-  def map_keys(list, f) do
-    list |> Enum.map(fn {key, value} -> {f.(key), value} end)
+  def map_keys(enum, f) do
+    enum |> Enum.map(fn {key, value} -> {f.(key), value} end)
   end
 
   @doc """
-  Maps values of `list` using function `f`.
+  Maps values of `enum` using function `f`.
 
   ## Example
 
@@ -34,12 +69,12 @@ defmodule Bunch.KVList do
 
   """
   @spec map_values(t(k, v1), (v1 -> v2)) :: t(k, v2) when k: any, v1: any, v2: any
-  def map_values(list, f) do
-    list |> Enum.map(fn {key, value} -> {key, f.(value)} end)
+  def map_values(enum, f) do
+    enum |> Enum.map(fn {key, value} -> {key, f.(value)} end)
   end
 
   @doc """
-  Filters elements of `list` by keys using function `f`.
+  Filters elements of `enum` by keys using function `f`.
 
   ## Example
 
@@ -48,12 +83,12 @@ defmodule Bunch.KVList do
 
   """
   @spec filter_by_keys(t(k, v), (k -> as_boolean(term))) :: t(k, v) when k: any, v: any
-  def filter_by_keys(list, f) do
-    list |> Enum.filter(&apply_to_key(&1, f))
+  def filter_by_keys(enum, f) do
+    enum |> Enum.filter(&apply_to_key(&1, f))
   end
 
   @doc """
-  Filters elements of `list` by values using function `f`.
+  Filters elements of `enum` by values using function `f`.
 
   ## Example
 
@@ -62,12 +97,12 @@ defmodule Bunch.KVList do
 
   """
   @spec filter_by_values(t(k, v), (v -> as_boolean(term))) :: t(k, v) when k: any, v: any
-  def filter_by_values(list, f) do
-    list |> Enum.filter(&apply_to_value(&1, f))
+  def filter_by_values(enum, f) do
+    enum |> Enum.filter(&apply_to_value(&1, f))
   end
 
   @doc """
-  Executes `f` for each key in `list`.
+  Executes `f` for each key in `enum`.
 
   ## Example
 
@@ -77,12 +112,12 @@ defmodule Bunch.KVList do
 
   """
   @spec each_key(t(k, v), (k -> any | no_return)) :: :ok when k: any, v: any
-  def each_key(list, f) do
-    list |> Enum.each(&apply_to_key(&1, f))
+  def each_key(enum, f) do
+    enum |> Enum.each(&apply_to_key(&1, f))
   end
 
   @doc """
-  Executes `f` for each value in `list`.
+  Executes `f` for each value in `enum`.
 
   ## Example
 
@@ -92,12 +127,12 @@ defmodule Bunch.KVList do
 
   """
   @spec each_value(t(k, v), (v -> any | no_return)) :: :ok when k: any, v: any
-  def each_value(list, f) do
-    list |> Enum.each(&apply_to_value(&1, f))
+  def each_value(enum, f) do
+    enum |> Enum.each(&apply_to_value(&1, f))
   end
 
   @doc """
-  Returns `true` if `f` returns truthy value for any key from `list`, otherwise `false`.
+  Returns `true` if `f` returns truthy value for any key from `enum`, otherwise `false`.
 
   ## Example
 
@@ -108,12 +143,12 @@ defmodule Bunch.KVList do
 
   """
   @spec any_key?(t(k, v), (k -> as_boolean(term))) :: boolean when k: any, v: any
-  def any_key?(list, f) do
-    list |> Enum.any?(&apply_to_key(&1, f))
+  def any_key?(enum, f \\ & &1) do
+    enum |> Enum.any?(&apply_to_key(&1, f))
   end
 
   @doc """
-  Returns `true` if `f` returns truthy value for any value from `list`, otherwise `false`.
+  Returns `true` if `f` returns truthy value for any value from `enum`, otherwise `false`.
 
   ## Example
 
@@ -124,8 +159,8 @@ defmodule Bunch.KVList do
 
   """
   @spec any_value?(t(k, v), (v -> as_boolean(term))) :: boolean when k: any, v: any
-  def any_value?(list, f) do
-    list |> Enum.any?(&apply_to_value(&1, f))
+  def any_value?(enum, f \\ & &1) do
+    enum |> Enum.any?(&apply_to_value(&1, f))
   end
 
   defp apply_to_key({key, _value}, f), do: f.(key)
