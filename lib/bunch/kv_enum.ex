@@ -143,7 +143,7 @@ defmodule Bunch.KVEnum do
 
   """
   @spec any_key?(t(k, v), (k -> as_boolean(term))) :: boolean when k: any, v: any
-  def any_key?(enum, f) do
+  def any_key?(enum, f \\ & &1) do
     enum |> Enum.any?(&apply_to_key(&1, f))
   end
 
@@ -159,7 +159,7 @@ defmodule Bunch.KVEnum do
 
   """
   @spec any_value?(t(k, v), (v -> as_boolean(term))) :: boolean when k: any, v: any
-  def any_value?(enum, f) do
+  def any_value?(enum, f \\ & &1) do
     enum |> Enum.any?(&apply_to_value(&1, f))
   end
 
