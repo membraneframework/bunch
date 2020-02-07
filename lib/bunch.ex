@@ -66,33 +66,123 @@ defmodule Bunch do
   end
 
   @doc """
-  A labeled version of the `with` macro.
+  A labeled version of the `with/1` macro.
 
-  Helps to determine in `else` block which `with clause` did not match.
-  Therefore `else` block is always required. Due to the Elixir syntax requirements,
-  all clauses have to be labeled.
+  This macro works like `with/1`, but enforces user to mark corresponding `withl`
+  and `else` clauses with the same label (atom). If a `withl` clause does not
+  match, only the `else` clauses marked with the same label are matched against
+  the result.
 
-  Labels also make it possible to access results of already succeeded matches
-  from else clauses. That is why labels have to be known at the compile time.
 
-  There should be at least one clause in the else block for each label that
-  corresponds to a `<-` clause.
-
-  Duplicate labels are allowed.
-
-  ## Examples
-
-      iex> use Bunch
-      iex> list = [-1, 3, 2]
-      iex> binary = <<1,2>>
-      iex> withl max: i when i > 0 <- list |> Enum.max(),
-      ...>       bin: <<b::binary-size(i), _::binary>> <- binary do
-      ...>   {list, b}
-      ...> else
-      ...>   max: i -> {:error, :invalid_maximum, i}
-      ...>   bin: b -> {:error, :binary_too_short, b, i}
+      iex> use #{inspect(__MODULE__)}
+      iex> names = %{1 => "Harold", 2 => "Małgorzata"}
+      iex> test = fn id ->
+      ...>   withl id: {int_id, _} <- Integer.parse(id),
+      ...>         name: {:ok, name} <- Map.fetch(names, int_id) do
+      ...>     {:ok, "The name is \#{name}"}
+      ...>   else
+      ...>     id: :error -> {:error, :invalid_id}
+      ...>     name: :error -> {:error, :name_not_found}
+      ...>   end
       ...> end
-      {:error, :binary_too_short, <<1,2>>, 3}
+      iex> test.("1")
+      {:ok, "The name is Harold"}
+      iex> test.("5")
+      {:error, :name_not_found}
+      iex> test.("something")
+      {:error, :invalid_id}
+
+
+  `withl` clauses using no `<-` operator are supported, but they also have to be
+  labeled due to Elixir syntax restrictions.
+
+
+      iex> use #{inspect(__MODULE__)}
+      iex> names = %{1 => "Harold", 2 => "Małgorzata"}
+      iex> test = fn id ->
+      ...>   withl id: {int_id, _} <- Integer.parse(id),
+      ...>         do: int_id = int_id + 1,
+      ...>         name: {:ok, name} <- Map.fetch(names, int_id) do
+      ...>     {:ok, "The name is \#{name}"}
+      ...>   else
+      ...>     id: :error -> {:error, :invalid_id}
+      ...>     name: :error -> {:error, :name_not_found}
+      ...>   end
+      ...> end
+      iex> test.("0")
+      {:ok, "The name is Harold"}
+
+
+  All the `withl` clauses that use `<-` operator must have at least one corresponding
+  `else` clause.
+
+
+      iex> use #{inspect(__MODULE__)}
+      iex> try do
+      ...>   Code.compile_quoted(quote do
+      ...>     withl a: a when a > 0 <- 1,
+      ...>           b: b when b > 0 <- 2 do
+      ...>       {:ok, a + b}
+      ...>     else
+      ...>       a: _ -> :error
+      ...>     end
+      ...>   end)
+      ...> rescue
+      ...>   e -> e.description
+      ...> end
+      "Label `:b` not present in withl else clauses"
+
+
+  ## Variable scoping
+
+  Because the labels are resolved in the compile time, they make it possible to
+  access results of already succeeded matches from `else` clauses. This may help
+  handle error recovery, like below:
+
+
+      iex> use #{inspect(__MODULE__)}
+      iex> names = %{1 => "Harold", 2 => "Małgorzata"}
+      iex> test = fn id ->
+      ...>   withl id: {int_id, _} <- Integer.parse(id),
+      ...>         do: int_id = int_id + 1,
+      ...>         name: {:ok, name} <- Map.fetch(names, int_id) do
+      ...>     {:ok, "The name is \#{name}"}
+      ...>   else
+      ...>     id: :error -> {:error, :invalid_id}
+      ...>     name: :error -> {:ok, "The name is Defaultius the \#{int_id}th"}
+      ...>   end
+      ...> end
+      iex> test.("0")
+      {:ok, "The name is Harold"}
+      iex> test.("5")
+      {:ok, "The name is Defaultius the 6th"}
+
+
+  ## Duplicate labels
+
+  `withl` supports marking multiple `withl` clauses with the same label, however
+  in that case all the `else` clauses marked with such label are simply put multiple
+  times into the generated code. Note that this may lead to confusion, in particular
+  when variables are rebound in `withl` clauses:
+
+
+      iex> use #{inspect(__MODULE__)}
+      iex> test = fn x ->
+      ...>   withl a: x when x > 1 <- x,
+      ...>         do: x = x + 1,
+      ...>         a: x when x < 4 <- x do
+      ...>     :ok
+      ...>   else
+      ...>     a: x -> {:error, x}
+      ...>   end
+      ...> end
+      iex> test.(2)
+      :ok
+      iex> test.(1)
+      {:error, 1}
+      iex> test.(3)
+      {:error, 4}
+
 
   """
   @spec withl(keyword(with_clause :: term), do: code_block :: term(), else: match_clauses :: term) ::
@@ -106,7 +196,7 @@ defmodule Bunch do
 
   ## Examples
 
-      iex> use Bunch
+      iex> use #{inspect(__MODULE__)}
       iex> x = 1
       iex> y = 2
       iex> withl a: true <- x > 0,
