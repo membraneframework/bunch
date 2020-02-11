@@ -64,19 +64,19 @@ defmodule Bunch.Macro do
   """
   @spec prewalk_while(Macro.t(), (Macro.t() -> {:enter | :skip, Macro.t()})) :: Macro.t()
   def prewalk_while(ast, fun) do
-    {ast, nil} =
+    {ast, :not_skipping} =
       Macro.traverse(
         ast,
-        nil,
-        fn node, nil ->
+        :not_skipping,
+        fn node, :not_skipping ->
           case fun.(node) do
-            {:enter, node} -> {node, nil}
-            {:skip, node} -> {nil, {:node, node}}
+            {:enter, node} -> {node, :not_skipping}
+            {:skip, node} -> {:skipping, {:node, node}}
           end
         end,
         fn
-          nil, {:node, node} -> {node, nil}
-          node, nil -> {node, nil}
+          :skipping, {:node, node} -> {node, :not_skipping}
+          node, :not_skipping -> {node, :not_skipping}
         end
       )
 
@@ -105,19 +105,19 @@ defmodule Bunch.Macro do
           (Macro.t(), any() -> {:enter | :skip, Macro.t(), any()})
         ) :: {Macro.t(), any()}
   def prewalk_while(ast, acc, fun) do
-    {ast, {acc, nil}} =
+    {ast, {acc, :not_skipping}} =
       Macro.traverse(
         ast,
-        {acc, nil},
-        fn node, {acc, nil} ->
+        {acc, :not_skipping},
+        fn node, {acc, :not_skipping} ->
           case fun.(node, acc) do
-            {:enter, node, acc} -> {node, {acc, nil}}
-            {:skip, node, acc} -> {nil, {acc, {:node, node}}}
+            {:enter, node, acc} -> {node, {acc, :not_skipping}}
+            {:skip, node, acc} -> {:skipping, {acc, {:node, node}}}
           end
         end,
         fn
-          nil, {acc, {:node, node}} -> {node, {acc, nil}}
-          node, {acc, nil} -> {node, {acc, nil}}
+          :skipping, {acc, {:node, node}} -> {node, {acc, :not_skipping}}
+          node, {acc, :not_skipping} -> {node, {acc, :not_skipping}}
         end
       )
 
