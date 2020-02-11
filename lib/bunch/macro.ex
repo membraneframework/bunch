@@ -84,6 +84,47 @@ defmodule Bunch.Macro do
   end
 
   @doc """
+  Works like `Macro.prewalk/3`, but allows to skip particular nodes using an accumulator.
+
+  ## Example
+
+      iex> code = quote do fun(1, 2, opts: [key: :val]) end
+      iex> code |> Bunch.Macro.prewalk_while(0, fn node, acc ->
+      ...>   if Keyword.keyword?(node) do
+      ...>     {:skip, node ++ [default: 1], acc + 1}
+      ...>   else
+      ...>     {:enter, node, acc}
+      ...>   end
+      ...> end)
+      {quote do fun(1, 2, opts: [key: :val], default: 1) end, 1}
+
+  """
+  @spec prewalk_while(
+          Macro.t(),
+          any(),
+          (Macro.t(), any() -> {:enter | :skip, Macro.t(), any()})
+        ) :: {Macro.t(), any()}
+  def prewalk_while(ast, acc, fun) do
+    {ast, {acc, nil}} =
+      Macro.traverse(
+        ast,
+        {acc, nil},
+        fn node, {acc, nil} ->
+          case fun.(node, acc) do
+            {:enter, node, acc} -> {node, {acc, nil}}
+            {:skip, node, acc} -> {nil, {acc, {:node, node}}}
+          end
+        end,
+        fn
+          nil, {acc, {:node, node}} -> {node, {acc, nil}}
+          node, {acc, nil} -> {node, {acc, nil}}
+        end
+      )
+
+    {ast, acc}
+  end
+
+  @doc """
   Receives an AST and traverses it expanding all the nodes.
 
   This function uses `Macro.expand/2` under the hood. Check
