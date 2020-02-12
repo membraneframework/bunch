@@ -71,11 +71,11 @@ defmodule Bunch.Macro do
         fn node, :not_skipping ->
           case fun.(node) do
             {:enter, node} -> {node, :not_skipping}
-            {:skip, node} -> {:skipping, {:node, node}}
+            {:skip, node} -> {nil, {:skipping, node}}
           end
         end,
         fn
-          :skipping, {:node, node} -> {node, :not_skipping}
+          nil, {:skipping, node} -> {node, :not_skipping}
           node, :not_skipping -> {node, :not_skipping}
         end
       )
@@ -112,11 +112,11 @@ defmodule Bunch.Macro do
         fn node, {acc, :not_skipping} ->
           case fun.(node, acc) do
             {:enter, node, acc} -> {node, {acc, :not_skipping}}
-            {:skip, node, acc} -> {:skipping, {acc, {:node, node}}}
+            {:skip, node, acc} -> {nil, {acc, {:skipping, node}}}
           end
         end,
         fn
-          :skipping, {acc, {:node, node}} -> {node, {acc, :not_skipping}}
+          nil, {acc, {:skipping, node}} -> {node, {acc, :not_skipping}}
           node, {acc, :not_skipping} -> {node, {acc, :not_skipping}}
         end
       )
