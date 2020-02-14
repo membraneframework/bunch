@@ -1,7 +1,7 @@
 defmodule Bunch.MixProject do
   use Mix.Project
 
-  @version "1.2.0"
+  @version "1.3.0"
   @github_url "https://github.com/membraneframework/bunch"
 
   def project do
@@ -28,7 +28,8 @@ defmodule Bunch.MixProject do
     [
       main: "readme",
       extras: ["README.md"],
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      nest_modules_by_prefix: [Bunch]
     ]
   end
 
