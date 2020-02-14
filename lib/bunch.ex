@@ -137,7 +137,7 @@ defmodule Bunch do
 
   Because the labels are resolved in the compile time, they make it possible to
   access results of already succeeded matches from `else` clauses. This may help
-  handle error recovery, like below:
+  handling errors, like below:
 
 
       iex> use #{inspect(__MODULE__)}
