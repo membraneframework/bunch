@@ -240,10 +240,7 @@ defmodule Bunch do
             |> raise_compile_error(caller, meta)
 
         args = [clause, [do: acc] ++ [else: label_else_clauses]]
-
-        quote do
-          with unquote_splicing(args)
-        end
+        {:with, meta, args}
 
       {_label, clause}, acc ->
         quote do
