@@ -37,6 +37,12 @@ defmodule Bunch do
   def value({_key, value}), do: value
 
   @doc """
+  Creates a shortly-inspectable reference.
+  """
+  @spec make_sref() :: Bunch.Sref.t()
+  defdelegate make_sref, to: Bunch.Sref, as: :new
+
+  @doc """
   Works like `quote/2`, but doesn't require a do/end block and options are passed
   as the last argument.
 
