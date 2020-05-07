@@ -14,8 +14,8 @@ defmodule Bunch.ShortRef do
   `t:#{inspect(__MODULE__)}.t/0` stores a usual reference along with first 4 bytes
   of its SHA1 hash and when inspected prints only 8 hex digits prepended with `#`.
   Thanks to use of the hash function, similar references have totally different
-  string representations - the case from the previous example would be `#40d9d435`
-  and `#213cb67e`.
+  string representations - the case from the previous example would be `#60e0fd2d`
+  and `#d4208051`.
 
   ## When to use
   `#{inspect(__MODULE__)}` should be used when a reference is to be printed or logged.
@@ -31,7 +31,7 @@ defmodule Bunch.ShortRef do
   Creates a short reference.
 
       iex> IEx.Helpers.ref(0, 1, 2, 3) |> #{inspect(__MODULE__)}.new() |> inspect()
-      "#6f1ef15f"
+      "#82c033ef"
       iex> <<"#", hash::binary-size(8)>> = #{inspect(__MODULE__)}.new() |> inspect()
       iex> Base.decode16(hash, case: :lower) |> elem(0)
       :ok
@@ -39,7 +39,7 @@ defmodule Bunch.ShortRef do
   """
   @spec new(reference) :: t
   def new(ref \\ make_ref()) do
-    '#Ref' ++ ref_list = :erlang.ref_to_list(ref)
+    ref_list = :erlang.ref_to_list(ref)
     <<bin_hash_part::binary-size(4), _::binary>> = :crypto.hash(:sha, ref_list)
     hash = "#" <> Base.encode16(bin_hash_part, case: :lower)
     %__MODULE__{ref: ref, hash: hash}
