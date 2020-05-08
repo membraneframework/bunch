@@ -37,6 +37,12 @@ defmodule Bunch do
   def value({_key, value}), do: value
 
   @doc """
+  Creates a short reference.
+  """
+  @spec make_short_ref() :: Bunch.ShortRef.t()
+  defdelegate make_short_ref, to: Bunch.ShortRef, as: :new
+
+  @doc """
   Works like `quote/2`, but doesn't require a do/end block and options are passed
   as the last argument.
 
