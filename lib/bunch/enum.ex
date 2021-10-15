@@ -118,9 +118,8 @@ defmodule Bunch.Enum do
         when a: any(), acc: any(), result: Type.stateful_try_t(acc)
   def try_reduce(enum, acc, f) do
     Enum.reduce_while(enum, {:ok, acc}, fn e, {:ok, acc} ->
-      with {:ok, new_acc} <- f.(e, acc) do
-        {:cont, {:ok, new_acc}}
-      else
+      case f.(e, acc) do
+        {:ok, new_acc} -> {:cont, {:ok, new_acc}}
         {{:error, reason}, new_acc} -> {:halt, {{:error, reason}, new_acc}}
       end
     end)
@@ -156,9 +155,8 @@ defmodule Bunch.Enum do
         when a: any(), acc: any()
   def try_reduce_while(enum, acc, f) do
     Enum.reduce_while(enum, {:ok, acc}, fn e, {:ok, acc} ->
-      with {{:ok, :cont}, new_acc} <- f.(e, acc) do
-        {:cont, {:ok, new_acc}}
-      else
+      case f.(e, acc) do
+        {{:ok, :cont}, new_acc} -> {:cont, {:ok, new_acc}}
         {{:ok, :halt}, new_acc} -> {:halt, {:ok, new_acc}}
         {{:error, reason}, new_acc} -> {:halt, {{:error, reason}, new_acc}}
       end
@@ -187,10 +185,9 @@ defmodule Bunch.Enum do
   defp do_try_each([], _f), do: :ok
 
   defp do_try_each([h | t], f) do
-    with :ok <- f.(h) do
-      do_try_each(t, f)
-    else
-      {:error, reason} -> {:error, reason}
+    case f.(h) do
+      :ok -> do_try_each(t, f)
+      {:error, _error} = error -> error
     end
   end
 
@@ -216,9 +213,8 @@ defmodule Bunch.Enum do
   defp do_try_map([], _f, acc), do: {:ok, acc |> Enum.reverse()}
 
   defp do_try_map([h | t], f, acc) do
-    with {:ok, res} <- f.(h) do
-      do_try_map(t, f, [res | acc])
-    else
+    case f.(h) do
+      {:ok, res} -> do_try_map(t, f, [res | acc])
       {:error, reason} -> {:error, reason}
     end
   end
@@ -245,9 +241,8 @@ defmodule Bunch.Enum do
   defp do_try_flat_map([], _f, acc), do: {:ok, acc |> Enum.reverse()}
 
   defp do_try_flat_map([h | t], f, acc) do
-    with {:ok, res} <- f.(h) do
-      do_try_flat_map(t, f, res |> Enum.reverse(acc))
-    else
+    case f.(h) do
+      {:ok, res} -> do_try_flat_map(t, f, res |> Enum.reverse(acc))
       {:error, reason} -> {:error, reason}
     end
   end
@@ -278,9 +273,8 @@ defmodule Bunch.Enum do
   defp do_try_map_reduce([], f_acc, _f, acc), do: {{:ok, acc |> Enum.reverse()}, f_acc}
 
   defp do_try_map_reduce([h | t], f_acc, f, acc) do
-    with {{:ok, res}, f_acc} <- f.(h, f_acc) do
-      do_try_map_reduce(t, f_acc, f, [res | acc])
-    else
+    case f.(h, f_acc) do
+      {{:ok, res}, f_acc} -> do_try_map_reduce(t, f_acc, f, [res | acc])
       {{:error, reason}, f_acc} -> {{:error, reason}, f_acc}
     end
   end
@@ -312,9 +306,8 @@ defmodule Bunch.Enum do
   defp try_flat_map_reduce([], f_acc, _f, acc), do: {{:ok, acc |> Enum.reverse()}, f_acc}
 
   defp try_flat_map_reduce([h | t], f_acc, f, acc) do
-    with {{:ok, res}, f_acc} <- f.(h, f_acc) do
-      try_flat_map_reduce(t, f_acc, f, (res |> Enum.reverse()) ++ acc)
-    else
+    case f.(h, f_acc) do
+      {{:ok, res}, f_acc} -> try_flat_map_reduce(t, f_acc, f, (res |> Enum.reverse()) ++ acc)
       {{:error, reason}, f_acc} -> {{:error, reason}, f_acc}
       {:error, reason} -> {{:error, reason}, f_acc}
     end
