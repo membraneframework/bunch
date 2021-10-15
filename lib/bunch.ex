@@ -245,8 +245,7 @@ defmodule Bunch do
             "Label `#{inspect(label)}` not present in withl else clauses"
             |> raise_compile_error(caller, meta)
 
-        args = [clause, [do: acc] ++ [else: label_else_clauses]]
-        {:with, meta, args}
+        {:with, meta, [clause, [do: acc, else: label_else_clauses]]}
 
       {_label, clause}, acc ->
         quote do
