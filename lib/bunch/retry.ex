@@ -34,9 +34,9 @@ defmodule Bunch.Retry do
       2
       iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
       iex> #{inspect(__MODULE__)}.retry(
-      ...> fn -> :timer.sleep(50); Agent.get_and_update(pid, &{&1, &1+1}) end,
+      ...> fn -> :timer.sleep(100); Agent.get_and_update(pid, &{&1, &1+1}) end,
       ...> & &1 > 3,
-      ...> duration: 80
+      ...> duration: 150
       ...> )
       1
       iex> {:ok, pid} = Agent.start_link(fn -> 0 end)
