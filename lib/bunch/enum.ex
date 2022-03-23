@@ -131,7 +131,7 @@ defmodule Bunch.Enum do
 
   Behaves like `Enum.reduce_while/3` as long as given `fun` returns
   `{{:ok, :cont | :halt}, new_acc}`. If it happens to return
-  `{{:error, reason}, new_acc}`, reduction is stopped and the error is returend.
+  `{{:error, reason}, new_acc}`, reduction is stopped and the error is returned.
 
   ## Examples:
 
@@ -257,7 +257,7 @@ defmodule Bunch.Enum do
 
   Behaves like `Enum.map_reduce/3` as long as given `fun` returns
   `{{:ok, value}, new_acc}`. If it happens to return `{{:error, reason}, new_acc}`,
-  reduction is stopped and the error is returend.
+  reduction is stopped and the error is returned.
 
   ## Examples:
 
@@ -399,8 +399,8 @@ defmodule Bunch.Enum do
   def duplicates(enum, min_occurences \\ 2) do
     enum
     |> Enum.reduce({%{}, []}, fn v, {existent, duplicates} ->
-      {occurences, existent} = existent |> Map.get_and_update(v, &{&1 || 1, (&1 || 1) + 1})
-      duplicates = if occurences == min_occurences, do: [v | duplicates], else: duplicates
+      {occurrences, existent} = existent |> Map.get_and_update(v, &{&1 || 1, (&1 || 1) + 1})
+      duplicates = if occurrences == min_occurences, do: [v | duplicates], else: duplicates
       {existent, duplicates}
     end)
     ~> ({_, duplicates} -> duplicates)
