@@ -36,7 +36,7 @@ defmodule Bunch.Markdown do
   end
 
   @doc """
-  Indents the whole block of text by specified numer of hard spaces (`&nbsp;`).
+  Indents the whole block of text by specified number of hard spaces (`&nbsp;`).
 
   ## Examples
 

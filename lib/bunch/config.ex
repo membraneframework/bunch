@@ -77,8 +77,8 @@ defmodule Bunch.Config do
       fields: {{:error, reason}, _config} ->
         {:error, {:config_field, reason}}
 
-      fields: {:ok, {_config, remainig}} ->
-        {:error, {:config_invalid_keys, remainig |> Map.keys()}}
+      fields: {:ok, {_config, remaining}} ->
+        {:error, {:config_invalid_keys, remaining |> Map.keys()}}
     end
   end
 

@@ -373,7 +373,7 @@ defmodule Bunch do
     if not arg_present? do
       """
       `#{inspect(__MODULE__)}.~>/2` operator requires either match clauses or \
-      at least one occurence of `&1` argument on the right hand side.
+      at least one occurrence of `&1` argument on the right hand side.
       """
       |> raise_compile_error(__CALLER__)
     end
