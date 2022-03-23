@@ -1,7 +1,7 @@
 defmodule Bunch.MixProject do
   use Mix.Project
 
-  @version "1.3.0"
+  @version "1.3.1"
   @github_url "https://github.com/membraneframework/bunch"
 
   def project do
@@ -27,7 +27,7 @@ defmodule Bunch.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"],
+      extras: ["README.md", "LICENSE"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [Bunch]
     ]
@@ -36,7 +36,7 @@ defmodule Bunch.MixProject do
   defp package do
     [
       maintainers: ["Membrane Team"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @github_url,
         "Membrane Framework Homepage" => "https://membraneframework.org"
