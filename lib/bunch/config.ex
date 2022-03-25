@@ -3,8 +3,9 @@ defmodule Bunch.Config do
   A bunch of helpers for parsing and validating configurations.
   """
 
-  alias Bunch.Type
   use Bunch
+
+  alias Bunch.Type
 
   @doc """
   Parses `config` according to `fields_specs`.
@@ -117,7 +118,7 @@ defmodule Bunch.Config do
   end
 
   defp parse_field(key, spec, {:ok, value}, config) do
-    validate = spec |> Map.get(:validate, fn _ -> :ok end)
+    validate = spec |> Map.get(:validate, fn _value -> :ok end)
     in_enum = spec |> Map.get(:in, [value])
 
     withl fun:

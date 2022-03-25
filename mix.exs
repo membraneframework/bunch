@@ -48,6 +48,7 @@ defmodule Bunch.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false}
     ]
   end

@@ -36,7 +36,7 @@ defmodule Bunch.Macro do
   defp replace_call(ast_node, {module, fun_name})
        when is_atom(module) and is_atom(fun_name) do
     case ast_node do
-      {^fun_name, _, args} ->
+      {^fun_name, _ctx, args} ->
         quote do
           apply(unquote(module), unquote(fun_name), unquote(args))
         end
@@ -130,5 +130,6 @@ defmodule Bunch.Macro do
   This function uses `Macro.expand/2` under the hood. Check
   it out for more information and examples.
   """
+  @spec expand_deep(Macro.t(), Macro.Env.t()) :: Macro.t()
   def expand_deep(ast, env), do: Macro.prewalk(ast, fn tree -> Macro.expand(tree, env) end)
 end

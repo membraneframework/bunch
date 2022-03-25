@@ -272,8 +272,7 @@ defmodule Bunch do
       [nil]
 
   """
-  @spec listify(l) :: l when l: list
-  @spec listify(a) :: [a] when a: any
+  @spec listify(a | [a]) :: [a] when a: any
   def listify(list) when is_list(list) do
     list
   end
@@ -297,7 +296,7 @@ defmodule Bunch do
   @spec error_if_nil(value, reason) :: Type.try_t(value)
         when value: any(), reason: any()
   def error_if_nil(nil, reason), do: {:error, reason}
-  def error_if_nil(v, _), do: {:ok, v}
+  def error_if_nil(v, _reason), do: {:ok, v}
 
   @doc """
   Returns given stateful try value along with its status.
@@ -359,7 +358,7 @@ defmodule Bunch do
         {:&, _meta, [i]} = node, acc when is_integer(i) ->
           {node, acc}
 
-        {:&, meta, _}, _acc ->
+        {:&, meta, _args}, _acc ->
           """
           The `&` (capture) operator is not allowed in lambda-like version of \
           `#{inspect(__MODULE__)}.~>/2`. Use `&1` alone instead.
@@ -418,6 +417,8 @@ defmodule Bunch do
     |> raise_compile_error(__CALLER__)
   end
 
+  @spec raise_compile_error(term(), Macro.Env.t(), Keyword.t()) :: no_return()
+  @spec raise_compile_error(term(), Macro.Env.t()) :: no_return()
   defp raise_compile_error(reason, caller, meta \\ []) do
     raise CompileError,
       file: caller.file,

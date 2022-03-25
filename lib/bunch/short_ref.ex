@@ -40,7 +40,7 @@ defmodule Bunch.ShortRef do
   @spec new(reference) :: t
   def new(ref \\ make_ref()) do
     ref_list = :erlang.ref_to_list(ref)
-    <<bin_hash_part::binary-size(4), _::binary>> = :crypto.hash(:sha, ref_list)
+    <<bin_hash_part::binary-size(4), _dropped::binary>> = :crypto.hash(:sha, ref_list)
     hash = "#" <> Base.encode16(bin_hash_part, case: :lower)
     %__MODULE__{ref: ref, hash: hash}
   end
