@@ -26,8 +26,7 @@ defmodule Bunch.Typespec do
       :b
 
   """
-  # credo:disable-for-next-line Credo.Check.Consistency.UnusedVariableNames
-  defmacro @{:list_type, _, [{:"::", _, [{name, _, _env} = name_var, list]}]} do
+  defmacro @{:list_type, _meta1, [{:"::", _meta2, [{name, _meta3, _env} = name_var, list]}]} do
     type = list |> Enum.reduce(fn a, b -> {:|, [], [a, b]} end)
 
     quote do
