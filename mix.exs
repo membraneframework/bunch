@@ -21,13 +21,14 @@ defmodule Bunch.MixProject do
   end
 
   def application do
-    [extra_applications: []]
+    [extra_applications: [:crypto]]
   end
 
   defp docs do
     [
       main: "readme",
       extras: ["README.md", "LICENSE"],
+      formatters: ["html"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [Bunch]
     ]
@@ -46,8 +47,9 @@ defmodule Bunch.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:credo, "~> 1.6", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.1", only: :dev, runtime: false}
     ]
   end
 end

@@ -2,8 +2,10 @@ defmodule Bunch.Struct do
   @moduledoc """
   A bunch of functions for easier manipulation on structs.
   """
-  import Kernel, except: [get_in: 2, put_in: 2, update_in: 3, get_and_update_in: 3, pop_in: 2]
+
   use Bunch
+
+  import Kernel, except: [get_in: 2, put_in: 2, update_in: 3, get_and_update_in: 3, pop_in: 2]
 
   @compile {:inline, map_keys: 1}
 
