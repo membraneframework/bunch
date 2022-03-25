@@ -45,7 +45,7 @@ jobs:
       - run: mix compile
       - run: mix credo
       - run: mix docs && mix docs 2>&1 | (! grep -q "warning:")
-      - run: asdf current elixir | awk '{print $2}' > .elixir_version
+      - run: elixir -v | tail -n 1 > .elixir_version
       - restore_cache:
           keys:
             - dialyzer-cache-{{ arch }}-{{ checksum ".elixir_version" }}
