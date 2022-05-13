@@ -8,7 +8,7 @@ defmodule Bunch.MixProject do
     [
       app: :bunch,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       dialyzer: dialyzer(),
