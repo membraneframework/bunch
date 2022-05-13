@@ -8,15 +8,20 @@ defmodule Bunch.MixProject do
     [
       app: :bunch,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
-      app: :bunch,
-      name: "Bunch",
+      deps: deps(),
+      dialyzer: dialyzer(),
+
+      # hex
       description: "A bunch of helper functions, intended to make life easier",
       package: package(),
+
+      # docs
+      name: "Bunch",
       source_url: @github_url,
-      docs: docs(),
-      deps: deps()
+      homepage_url: "https://membraneframework.org",
+      docs: docs()
     ]
   end
 
@@ -51,5 +56,18 @@ defmodule Bunch.MixProject do
       {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false}
     ]
+  end
+
+  defp dialyzer() do
+    opts = [
+      flags: [:error_handling]
+    ]
+
+    if System.get_env("CI") == "true" do
+      # Store PLTs in cacheable directory for CI
+      [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
+    else
+      opts
+    end
   end
 end
