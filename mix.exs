@@ -26,7 +26,7 @@ defmodule Bunch.MixProject do
   end
 
   def application do
-    [extra_applications: [:crypto]]
+    [extra_applications: [:crypto, :logger]]
   end
 
   defp docs do

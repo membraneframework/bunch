@@ -193,7 +193,8 @@ defmodule Bunch do
   """
   @spec withl(keyword(with_clause :: term), do: code_block :: term(), else: match_clauses :: term) ::
           term
-  defmacro withl(with_clauses, do: block, else: else_clauses) do
+  defmacro withl(with_clauses, do: block, else: else_clauses)
+           when is_list(with_clauses) and is_list(else_clauses) do
     do_withl(with_clauses, block, else_clauses, __CALLER__)
   end
 
@@ -221,7 +222,7 @@ defmodule Bunch do
             | {:else, match_clauses :: term}
           ]
         ) :: term
-  defmacro withl(keyword) do
+  defmacro withl(keyword) when is_list(keyword) do
     {{:else, else_clauses}, keyword} = keyword |> List.pop_at(-1)
     {{:do, block}, keyword} = keyword |> List.pop_at(-1)
     with_clauses = keyword
@@ -236,23 +237,38 @@ defmodule Bunch do
       end)
       |> Enum.group_by(fn {k, _v} -> k end, fn {_k, v} -> v end)
 
-    with_clauses
-    |> Enum.reverse()
-    |> Enum.reduce(block, fn
-      {label, {:<-, meta, _args} = clause}, acc ->
-        label_else_clauses =
-          else_clauses[label] ||
-            "Label `#{inspect(label)}` not present in withl else clauses"
-            |> raise_compile_error(caller, meta)
+    {result, used_labels} =
+      with_clauses
+      |> Enum.reverse()
+      |> Enum.reduce({block, []}, fn
+        {label, {:<-, meta, _args} = clause}, {acc, used_labels} ->
+          label_else_clauses =
+            else_clauses[label] ||
+              "Label `#{inspect(label)}` not present in withl else clauses"
+              |> raise_compile_error(caller, meta)
 
-        {:with, meta, [clause, [do: acc, else: label_else_clauses]]}
+          {{:with, meta, [clause, [do: acc, else: label_else_clauses]]}, [label | used_labels]}
 
-      {_label, clause}, acc ->
-        quote do
-          unquote(clause)
-          unquote(acc)
-        end
+        {_label, clause}, {acc, used_labels} ->
+          {quote do
+             unquote(clause)
+             unquote(acc)
+           end, used_labels}
+      end)
+
+    unused_else_clauses = Map.drop(else_clauses, used_labels)
+
+    Enum.each(unused_else_clauses, fn {label, clauses} ->
+      Enum.each(clauses, fn {:->, meta, _args} ->
+        log_compile_warning(
+          "withl else clause labelled #{inspect(label)} will never match",
+          caller,
+          meta
+        )
+      end)
     end)
+
+    result
   end
 
   @doc """
@@ -424,5 +440,12 @@ defmodule Bunch do
       file: caller.file,
       line: meta |> Keyword.get(:line, caller.line),
       description: reason
+  end
+
+  defp log_compile_warning(warning, caller, meta) do
+    stacktrace =
+      caller |> Map.update!(:line, &Keyword.get(meta, :line, &1)) |> Macro.Env.stacktrace()
+
+    IO.warn(warning, stacktrace)
   end
 end
