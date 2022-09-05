@@ -244,7 +244,7 @@ defmodule Bunch do
         {label, {:<-, meta, _args} = clause}, {acc, used_labels} ->
           label_else_clauses =
             else_clauses[label] ||
-              "Label `#{inspect(label)}` not present in withl else clauses"
+              "Label #{inspect(label)} not present in withl else clauses"
               |> raise_compile_error(caller, meta)
 
           {{:with, meta, [clause, [do: acc, else: label_else_clauses]]}, [label | used_labels]}
