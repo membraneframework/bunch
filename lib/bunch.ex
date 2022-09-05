@@ -261,7 +261,7 @@ defmodule Bunch do
     Enum.each(unused_else_clauses, fn {label, clauses} ->
       Enum.each(clauses, fn {:->, meta, _args} ->
         log_compile_warning(
-          "withl else clause labelled #{inspect(label)} will never match",
+          "withl's else clause labelled #{inspect(label)} will never match",
           caller,
           meta
         )
