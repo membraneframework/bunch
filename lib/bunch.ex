@@ -139,26 +139,6 @@ defmodule Bunch do
       "Label :b not present in withl else clauses"
 
 
-  If an `else` label doesn't correspond to any `withl` clause that uses `<-` operator,
-  a warning is printed.
-
-      iex> use #{inspect(__MODULE__)}
-      iex> import ExUnit.CaptureIO
-      iex> warns = capture_io(:stderr, fn -> Code.compile_quoted(quote do
-      ...>   withl a: _a <- 123,
-      ...>         b: _a = 123 do
-      ...>     :ok
-      ...>   else
-      ...>     a: _a -> :error
-      ...>     b: _b -> :error
-      ...>     c: _c -> :error
-      ...>   end
-      ...> end) end)
-      iex> false = String.contains?(warns, "withl's else clause labelled :a will never match")
-      iex> true = String.contains?(warns, "withl's else clause labelled :b will never match")
-      iex> true = String.contains?(warns, "withl's else clause labelled :c will never match")
-
-
   ## Variable scoping
 
   Because the labels are resolved in the compile time, they make it possible to
