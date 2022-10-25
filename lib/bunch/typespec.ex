@@ -16,16 +16,17 @@ defmodule Bunch.Typespec do
 
   ## Example
 
-      iex> defmodule Abc do
-      ...> use #{inspect(__MODULE__)}
-      ...> @list_type t :: [:a, :b, :c]
-      ...> @spec get_at(0..2) :: t
-      ...> def get_at(x), do: @t |> Enum.at(x)
-      ...> end
-      iex> Abc.get_at(1)
-      :b
+      defmodule Abc do
+        use #{inspect(__MODULE__)}
+        @list_type t :: [:a, :b, :c]
+        @spec get_at(0..2) :: t
+        def get_at(x), do: @t |> Enum.at(x)
+      end
+
+      Abc.get_at(1) # -> :b
 
   """
+  @deprecated "Use #{inspect(__MODULE__)}.enum_to_alternative/1 instead"
   defmacro @{:list_type, _meta1, [{:"::", _meta2, [{name, _meta3, _env} = name_var, list]}]} do
     type =
       quote do
@@ -44,5 +45,32 @@ defmodule Bunch.Typespec do
     quote do
       Kernel.@(unquote(expr))
     end
+  end
+
+  @doc """
+  Converts an enumerable of terms to AST of alternative type of these terms.
+
+  Useful for defining a type out of a list of constants.
+
+  ## Examples
+
+      iex> defmodule Example do
+      ...>   @values [1, :a, {true, 3 * 4}]
+      ...>   @type value :: unquote(#{inspect(__MODULE__)}.enum_to_alternative(@values))
+      ...>   @spec get_value(0..2) :: value
+      ...>   def get_value(i), do: Enum.at(@values, i)
+      ...> end
+      iex> Example.get_value(1)
+      :a
+
+      iex> #{inspect(__MODULE__)}.enum_to_alternative([1, :a, {true, 3 * 4}])
+      quote do
+        1 | :a | {true, 12}
+      end
+
+  """
+  @spec enum_to_alternative(Enumerable.t()) :: Macro.t()
+  def enum_to_alternative(list) do
+    list |> Enum.reverse() |> Enum.reduce(fn a, b -> quote do: unquote(a) | unquote(b) end)
   end
 end
