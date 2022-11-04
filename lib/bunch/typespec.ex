@@ -11,6 +11,8 @@ defmodule Bunch.Typespec do
   end
 
   @doc """
+  **This macro is deprecated. Use `#{inspect(__MODULE__)}.enum_to_alternative/1` instead.**
+
   Allows to define a type in form of `t :: x | y | z | ...` and a module parameter
   in form of `@t [x, y, z, ...]` at once.
 
@@ -26,8 +28,11 @@ defmodule Bunch.Typespec do
       Abc.get_at(1) # -> :b
 
   """
-  @deprecated "Use #{inspect(__MODULE__)}.enum_to_alternative/1 instead"
   defmacro @{:list_type, _meta1, [{:"::", _meta2, [{name, _meta3, _env} = name_var, list]}]} do
+    IO.warn(
+      "Bunch.Typespec.@list_type is deprecated. Use #{inspect(__MODULE__)}.enum_to_alternative/1 instead."
+    )
+
     type =
       quote do
         Enum.reduce(unquote(list), fn a, b -> {:|, [], [a, b]} end)
