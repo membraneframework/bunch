@@ -14,6 +14,8 @@ defmodule Bunch.Config do
     * validate - function determining if field's value is correct
     * in - enumerable containing all valid values
     * default - value returned if a field is not found in `config`
+    * require? - determines whether is required, defaults to `false` when `default` is set
+      and `true` when `default` is not set
     * require_if - function determining if a field is required basing on previous
       fields' values
 
@@ -34,7 +36,7 @@ defmodule Bunch.Config do
       ...> [a: 1, b: 2],
       ...> a: [validate: & &1 > 0],
       ...> b: [in: -2..2],
-      ...> c: [require_if: & &1.a == &1.b]
+      ...> c: [require?: false]
       ...> )
       {:ok, %{a: 1, b: 2}}
       iex> #{inspect(__MODULE__)}.parse(
@@ -53,8 +55,9 @@ defmodule Bunch.Config do
               validate:
                 (v | any -> Type.try_t() | boolean)
                 | (v | any, config_map -> Type.try_t() | boolean),
-              in: list(v),
+              in: Enumerable.t(),
               default: v,
+              require?: boolean,
               require_if: (config_map -> boolean)
             )
         ) :: Type.try_t(config_map)
@@ -111,6 +114,10 @@ defmodule Bunch.Config do
 
   defp parse_field(key, %{default: default}, :error, _config) do
     {:ok, {key, default}}
+  end
+
+  defp parse_field(_key, %{require?: false}, :error, _config) do
+    :ok
   end
 
   defp parse_field(key, _spec, :error, _config) do
