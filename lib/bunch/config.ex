@@ -53,12 +53,13 @@ defmodule Bunch.Config do
   """
   @spec parse(
           config :: Keyword.t(v),
-          fields_specs | (parsed_config -> fields_specs)
+          [field | {field, field_specs | (parsed_config -> field_specs)}]
         ) :: Type.try_t(parsed_config)
         when parsed_config: %{atom => v},
+             field: atom,
              v: any,
-             fields_specs:
-               Keyword.t(
+             field_specs:
+               [
                  validate:
                    (v | any -> Type.try_t() | boolean)
                    | (v | any, parsed_config -> Type.try_t() | boolean),
@@ -66,7 +67,7 @@ defmodule Bunch.Config do
                  default: v,
                  require?: boolean,
                  require_if: (parsed_config -> boolean)
-               )
+               ]
                | nil
   def parse(config, fields_specs) do
     withl kw: true <- config |> Keyword.keyword?(),
