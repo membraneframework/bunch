@@ -104,18 +104,22 @@ defmodule Bunch.Config do
         {key, spec} when is_function(spec, 1) -> {key, spec.(parsed_config)}
       end
 
-    case parse_field(key, Map.new(spec), Map.fetch(config, key), parsed_config) do
-      {:ok, {key, value}} ->
-        parse_fields(Map.delete(config, key), fields_specs, Map.put(parsed_config, key, value))
+    if spec == nil do
+      parse_fields(config, fields_specs, parsed_config)
+    else
+      case parse_field(key, Map.new(spec), Map.fetch(config, key), parsed_config) do
+        {:ok, {key, value}} ->
+          parse_fields(Map.delete(config, key), fields_specs, Map.put(parsed_config, key, value))
 
-      {:ok, :ignore} ->
-        parse_fields(Map.delete(config, key), fields_specs, parsed_config)
+        {:ok, :ignore} ->
+          parse_fields(Map.delete(config, key), fields_specs, parsed_config)
 
-      {:error, :field_not_accepted} ->
-        parse_fields(config, fields_specs, parsed_config)
+        {:error, :field_not_accepted} ->
+          parse_fields(config, fields_specs, parsed_config)
 
-      {:error, reason} ->
-        {:error, reason}
+        {:error, reason} ->
+          {:error, reason}
+      end
     end
   end
 
