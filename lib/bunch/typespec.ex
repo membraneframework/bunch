@@ -3,6 +3,7 @@ defmodule Bunch.Typespec do
   A bunch of typespec-related helpers.
   """
 
+  @deprecated "`use Bunch.Typespec` only brings to scope the deprecated @/1"
   defmacro __using__(_args) do
     quote do
       import Kernel, except: [@: 1]
