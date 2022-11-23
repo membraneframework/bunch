@@ -17,7 +17,8 @@ defmodule Bunch do
           ~>: 2,
           ~>>: 2,
           quote_expr: 1,
-          quote_expr: 2
+          quote_expr: 2,
+          then_if: 3
         ]
     end
   end
@@ -449,13 +450,21 @@ defmodule Bunch do
     IO.warn(warning, stacktrace)
   end
 
-  defmacro then_if(x, condition, function) do
-    quote do
-      if unquote(condition) do
-        unquote(function).(unquote(x))
-      else
-        unquote(x)
-      end
+  @doc """
+  Maps a value `x` with a `function` if the condition is true, acts as
+  an identity function otherwise.
+
+  ## Examples
+    iex> use #{inspect(__MODULE__)}
+    iex> assert then_if(1, false, &(&1+1)) == 1
+    iex> assert then_if(1, true, &(&1+1)) == 2
+  """
+  @spec then_if(x :: any(), condition :: boolean(), f :: (any() -> any())) :: any()
+  def then_if(x, condition, f) do
+    if condition do
+      f.(x)
+    else
+      x
     end
   end
 end
