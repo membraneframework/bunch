@@ -448,4 +448,14 @@ defmodule Bunch do
 
     IO.warn(warning, stacktrace)
   end
+
+  defmacro then_if(x, condition, function) do
+    quote do
+      if unquote(condition) do
+        unquote(function).(unquote(x))
+      else
+        unquote(x)
+      end
+    end
+  end
 end
