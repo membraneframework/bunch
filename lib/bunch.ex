@@ -456,10 +456,12 @@ defmodule Bunch do
 
   ## Examples
     iex> use #{inspect(__MODULE__)}
-    iex> assert then_if(1, false, &(&1+1)) == 1
-    iex> assert then_if(1, true, &(&1+1)) == 2
+    iex> then_if(1, false, & &1 + 1)
+    1
+    iex> then_if(1, true, & &1 + 1)
+    2
   """
-  @spec then_if(x :: any(), condition :: boolean(), f :: (any() -> any())) :: any()
+  @spec then_if(x, condition :: boolean(), f :: (x -> y)) :: y when x: any(), y: any()
   def then_if(x, condition, f) do
     if condition do
       f.(x)
