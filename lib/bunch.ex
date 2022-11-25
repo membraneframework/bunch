@@ -17,7 +17,8 @@ defmodule Bunch do
           ~>: 2,
           ~>>: 2,
           quote_expr: 1,
-          quote_expr: 2
+          quote_expr: 2,
+          then_if: 3
         ]
     end
   end
@@ -447,5 +448,28 @@ defmodule Bunch do
       caller |> Map.update!(:line, &Keyword.get(meta, :line, &1)) |> Macro.Env.stacktrace()
 
     IO.warn(warning, stacktrace)
+  end
+
+  @doc """
+  Maps a value `x` with a `function` if the condition is true, acts as
+  an identity function otherwise.
+
+  ## Examples
+    iex> use #{inspect(__MODULE__)}
+    iex> then_if(1, false, & &1 + 1)
+    1
+    iex> then_if(1, true, & &1 + 1)
+    2
+    iex> arg = 1
+    iex> arg |> then_if(not is_list(arg), fn arg -> [arg] end) |> Enum.map(&(&1*2))
+    [2]
+  """
+  @spec then_if(x, condition :: boolean(), f :: (x -> y)) :: y when x: any(), y: any()
+  def then_if(x, condition, f) do
+    if condition do
+      f.(x)
+    else
+      x
+    end
   end
 end
