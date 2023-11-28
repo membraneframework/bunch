@@ -126,7 +126,7 @@ defmodule Bunch.Config do
   defp parse_field(key, %{require_if: require_if} = spec, value, config) do
     require Logger
 
-    Logger.warn(
+    Logger.warning(
       "Passing :require_if option to Bunch.Config.parse/2 is deprecated, pass function returning constraints instead"
     )
 
