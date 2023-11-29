@@ -40,7 +40,7 @@ defmodule Bunch.Enum do
       []
 
   """
-  @spec repeat(f :: (() -> a), non_neg_integer) :: [a] when a: any()
+  @spec repeat(f :: (-> a), non_neg_integer) :: [a] when a: any()
   def repeat(fun, i) when i >= 0 do
     do_repeat(fun, i, [])
   end

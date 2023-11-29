@@ -49,7 +49,7 @@ defmodule Bunch.Retry do
 
   """
   @spec retry(
-          fun :: (() -> res),
+          fun :: (-> res),
           arbiter :: (res -> stop? :: boolean),
           options :: [retry_option_t()]
         ) :: res
