@@ -64,7 +64,7 @@ defmodule Bunch.Retry do
   defp do_retry(fun, arbiter, times, duration, delay, retries, init_time) do
     ret = fun.()
 
-    if not arbiter.(ret) and times > retries &&
+    if (not arbiter.(ret) and times > retries) &&
          duration > System.monotonic_time(:millisecond) - init_time + delay do
       :timer.sleep(delay)
       fun |> do_retry(arbiter, times, duration, delay, retries + 1, init_time)

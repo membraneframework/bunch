@@ -135,7 +135,7 @@ defmodule Bunch do
       ...>     end
       ...>   end)
       ...> rescue
-      ...>   e -> e.description
+      ...>   e in CompileError -> e.description
       ...> end
       "Label :b not present in withl else clauses"
 
