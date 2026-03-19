@@ -358,7 +358,7 @@ defmodule Bunch.Enum do
   @spec unzip(tuples :: [tuple()]) :: tuple()
   def unzip([]), do: {}
 
-  def unzip([h | _] = list) when is_tuple(h) do
+  def unzip([h | _rest] = list) when is_tuple(h) do
     do_unzip(
       list |> Enum.reverse(),
       [] |> repeated(h |> tuple_size())
@@ -396,6 +396,6 @@ defmodule Bunch.Enum do
       duplicates = if occurrences == min_occurences, do: [v | duplicates], else: duplicates
       {existent, duplicates}
     end)
-    ~> ({_, duplicates} -> duplicates)
+    ~> ({_existent, duplicates} -> duplicates)
   end
 end

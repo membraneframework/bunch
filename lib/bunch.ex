@@ -356,7 +356,7 @@ defmodule Bunch do
 
   """
   # Case when the mapper is a list of match clauses
-  defmacro expr ~> ([{:->, _, _} | _] = mapper) do
+  defmacro expr ~> ([{:->, _meta, _args} | _rest] = mapper) do
     quote do
       case unquote(expr) do
         unquote(mapper)
@@ -413,7 +413,7 @@ defmodule Bunch do
       :error
 
   """
-  defmacro expr ~>> ([{:->, _, _} | _] = mapper_clauses) do
+  defmacro expr ~>> ([{:->, _meta, _args} | _rest] = mapper_clauses) do
     default =
       quote do
         default_result -> default_result
@@ -426,7 +426,7 @@ defmodule Bunch do
     end
   end
 
-  defmacro _expr ~>> _ do
+  defmacro _expr ~>> _mapper do
     """
     `#{inspect(__MODULE__)}.~>>/2` operator expects match clauses on the right \
     hand side.

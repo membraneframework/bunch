@@ -20,7 +20,7 @@ defmodule Bunch.Binary do
   """
   @spec chunk_every(binary, pos_integer) :: [binary]
   def chunk_every(binary, chunk_size) do
-    {result, _} = chunk_every_rem(binary, chunk_size)
+    {result, _remainder} = chunk_every_rem(binary, chunk_size)
     result
   end
 
@@ -67,7 +67,7 @@ defmodule Bunch.Binary do
   """
   @spec take_int_part(binary, pos_integer) :: binary
   def take_int_part(binary, i) do
-    {b, _} = split_int_part(binary, i)
+    {b, _rest} = split_int_part(binary, i)
     b
   end
 
