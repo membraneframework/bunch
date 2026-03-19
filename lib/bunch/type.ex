@@ -9,9 +9,14 @@ defmodule Bunch.Type do
   @type try_t :: :ok | {:error, reason :: any}
 
   @typedoc """
+  Represents result of an operation that may return something or fail with any reason.
+  """
+  @type try_t(value) :: {:ok, value} | {:error, reason :: any()}
+
+  @typedoc """
   Represents result of an operation that may return something or fail.
   """
-  @type try_t(value) :: {:ok, value} | {:error, reason :: any}
+  @type try_t(value, reason) :: {:ok, value} | {:error, reason}
 
   @typedoc """
   Represents a value along with state.

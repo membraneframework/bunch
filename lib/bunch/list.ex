@@ -12,7 +12,7 @@ defmodule Bunch.List do
   ## Examples
 
       iex> #{inspect(__MODULE__)}.unfoldr(10, fn 0 -> :halt; n -> {:cont, n-1} end)
-      Enum.to_list(9..0)
+      Enum.to_list(9..0//-1)
       iex> f = fn
       ...>   <<size, content::binary-size(size), rest::binary>> -> {:cont, content, rest}
       ...>   binary -> {:halt, binary}

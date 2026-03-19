@@ -20,7 +20,7 @@ defmodule Bunch.Code do
 
   The stacktrace is formatted to the readable format.
   """
-  defmacro stacktrace do
+  defmacro stacktrace() do
     quote do
       {:current_stacktrace, trace} = Process.info(self(), :current_stacktrace)
 

@@ -22,6 +22,23 @@ defmodule Bunch.Config do
   the constraints can be passed. If the function returns `nil`, field is considered non existent,
   as if it wasn't passed at all.
 
+  This function can return error with the following reasons:
+    * `{:config_not_keyword, config}` - provided config is not a keyword list.
+    * `{:config_duplicates, duplicates}` - keys in `duplicates` have appeared more than once in 
+      passed config.
+    * `{:config_invalid_keys, invalid_keys}` - keys in `invalid_keys` weren't expected. 
+    * `{:config_field, config_field_reason}` - there is an error associated with a specific config 
+      field. There can be the following reasons: 
+      - `{:key_not_found, key}` - `key` was expected, but wasn't present in config.
+      - `{:invalid_value, key: key, value: value}` - Key `key` has been provided
+        an invalid value `value` without known reason. This can occur when a function passed to
+        `:validate` constraint returns `false`.
+      - `{:invalid_value, key: key, value: value, reason: {:not_in, in_enum}}` - Key
+        `key` has been provided value `value` that is outside of enumerable passed to `:in` constraint.
+      - `{:invalid_value, key: key, value: value, reason: reason}` - Key `key` has
+        been provided an invalid value `value` with known reason `reason`. This can occur when a
+        function passed as `:validate` constrain returns `{:error, reason}`.
+
   ## Examples
 
       iex> #{inspect(__MODULE__)}.parse([a: 1, b: 2], a: [validate: & &1 > 0], b: [in: -2..2])
@@ -54,21 +71,30 @@ defmodule Bunch.Config do
   @spec parse(
           config :: Keyword.t(v),
           [field | {field, field_specs | (parsed_config -> field_specs)}]
-        ) :: Type.try_t(parsed_config)
-        when parsed_config: %{atom => v},
-             field: atom,
-             v: any,
+        ) :: Type.try_t(parsed_config, reason)
+        when parsed_config: %{atom() => v},
+             field: atom(),
+             v: any(),
              field_specs:
                [
                  validate:
-                   (v | any -> Type.try_t() | boolean)
-                   | (v | any, parsed_config -> Type.try_t() | boolean),
+                   (v | any() -> Type.try_t() | boolean())
+                   | (v | any(), parsed_config -> Type.try_t() | boolean()),
                  in: Enumerable.t(),
                  default: v,
-                 require?: boolean,
-                 require_if: (parsed_config -> boolean)
+                 require?: boolean(),
+                 require_if: (parsed_config -> boolean())
                ]
-               | nil
+               | nil,
+             reason:
+               {:config_not_keyword, any()}
+               | {:config_duplicates, [atom()]}
+               | {:config_invalid_keys, [atom()]}
+               | {:config_field,
+                  {:key_not_found, atom()}
+                  | {:invalid_value, key: atom(), value: any()}
+                  | {:invalid_value,
+                     key: atom(), value: any(), reason: {:not_in, Enumerable.t()} | any()}}
   def parse(config, fields_specs) do
     withl kw: true <- config |> Keyword.keyword?(),
           dup: [] <- config |> Keyword.keys() |> Bunch.Enum.duplicates(),
