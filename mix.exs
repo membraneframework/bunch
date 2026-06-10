@@ -1,7 +1,7 @@
 defmodule Bunch.MixProject do
   use Mix.Project
 
-  @version "1.6.2"
+  @version "1.6.3"
   @github_url "https://github.com/membraneframework/bunch"
 
   def project do
