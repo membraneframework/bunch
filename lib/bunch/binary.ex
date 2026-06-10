@@ -44,7 +44,7 @@ defmodule Bunch.Binary do
 
   defp do_chunk_every_rem(binary, chunk_size, acc \\ []) do
     case binary do
-      <<chunk::binary-size(chunk_size)>> <> rest ->
+      <<chunk::binary-size(^chunk_size)>> <> rest ->
         do_chunk_every_rem(rest, chunk_size, [chunk | acc])
 
       rest ->
@@ -87,7 +87,7 @@ defmodule Bunch.Binary do
   @spec split_int_part(binary, pos_integer) :: {binary, binary}
   def split_int_part(binary, i) do
     len = Bunch.Math.max_multiple_lte(i, binary |> byte_size())
-    <<b::binary-size(len), r::binary>> = binary
+    <<b::binary-size(^len), r::binary>> = binary
     {b, r}
   end
 end
